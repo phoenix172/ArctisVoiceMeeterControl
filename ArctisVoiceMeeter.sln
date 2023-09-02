@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArctisVoiceMeeter", "ArctisVoiceMeeter\ArctisVoiceMeeter.csproj", "{1877414E-B131-44E7-8CFD-56AE9C36982D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArctisVoiceMeeter", "ArctisVoiceMeeter\ArctisVoiceMeeter.csproj", "{1877414E-B131-44E7-8CFD-56AE9C36982D}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "dll wrapper base", "Dynamic-wrapper-for-unmanaged-dll\dll wrapper base\dll wrapper base.shproj", "{466A7E5A-F2E3-450B-9D21-C0623F459EA7}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "voicemeeter remote api wrap", "Voicemeeter-Remote-API-dll-dynamic-wrapper\voicemeeter remote api wrap\voicemeeter remote api wrap.shproj", "{28B74DFA-514F-49AB-B226-A3E5535E73DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,5 +25,11 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EEE59D22-9881-4CB4-A562-832BA65E65D6}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Dynamic-wrapper-for-unmanaged-dll\dll wrapper base\dll wrapper base.projitems*{1877414e-b131-44e7-8cfd-56ae9c36982d}*SharedItemsImports = 5
+		Voicemeeter-Remote-API-dll-dynamic-wrapper\voicemeeter remote api wrap\voicemeeter remote api wrap.projitems*{1877414e-b131-44e7-8cfd-56ae9c36982d}*SharedItemsImports = 5
+		Voicemeeter-Remote-API-dll-dynamic-wrapper\voicemeeter remote api wrap\voicemeeter remote api wrap.projitems*{28b74dfa-514f-49ab-b226-a3e5535e73db}*SharedItemsImports = 13
+		Dynamic-wrapper-for-unmanaged-dll\dll wrapper base\dll wrapper base.projitems*{466a7e5a-f2e3-450b-9d21-c0623f459ea7}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

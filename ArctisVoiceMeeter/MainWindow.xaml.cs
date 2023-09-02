@@ -23,6 +23,7 @@ namespace ArctisVoiceMeeter
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = new MainViewModel();
         }
     }
 }

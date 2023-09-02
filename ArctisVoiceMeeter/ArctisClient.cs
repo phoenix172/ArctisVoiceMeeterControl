@@ -1,60 +1,62 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HidSharp;
 
 namespace ArctisVoiceMeeter;
 
+public record ArctisStatus(uint Battery, uint ChatVolume, uint GameVolume);
+
 public class ArctisClient
 {
-    private const int VENDOR_STEELSERIES = 0x1038;
-    private const int ID_ARCTIS_9 = 0x12c2; // 0x12c4;
-    private const byte BATTERY_MAX = 0x9A;
-    private const byte BATTERY_MIN = 0x64;
+    private const int VendorSteelSeries = 0x1038;
+    private const int IdArctis9 = 0x12c2;
+    private const byte BatteryMax = 0x9A;
+    private const byte BatteryMin = 0x64;
 
-    private const byte CHANNEL_MIN_VOLUME = 0x13;
-    private const byte CHANNEL_MAX_VOLUME = 0x0;
+    private const byte ChannelMinVolume = 0x13;
+    private const byte ChannelMaxVolume = 0x0;
 
-    public static float Scale(float val, float inMin, float inMax, float outMin = 0, float outMax = 100)
-        => (val - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+    private const uint BatteryByteIndex = 4;
+    private const uint ChatVolumeByteIndex = 10;
+    private const uint GameVolumeByteIndex = 11;
 
-    public static byte Scale(byte val, byte inMin, byte inMax, byte outMin = 0, byte outMax = 100)
-         => (byte)((val - inMin) * (outMax - outMin) / (double)(inMax - inMin) + outMin);
-
-    public static (int Battery, int ChatVolume, int GameVolume) ParseData(byte[] data)
+    public ArctisStatus GetStatus()
     {
-        byte Battery(int x)
-        {
-            return Scale(data[x], BATTERY_MIN, BATTERY_MAX, 0, 100);
-        }
-
-        var kur = string.Join(" ", data);
-        //Console.WriteLine(kur);
-
-        var battery = Battery(4);//miswim si
-        var chatVolume = Scale(data[10], CHANNEL_MIN_VOLUME, CHANNEL_MAX_VOLUME);
-        var gameVolume = Scale(data[11], CHANNEL_MIN_VOLUME, CHANNEL_MAX_VOLUME);
-
-        return (battery, chatVolume, gameVolume);
+        var data = GetRawStatus();
+        var parsed = ParseRawStatus(data);
+        return parsed;
     }
 
-    public static byte[] GetRawData(int vid = VENDOR_STEELSERIES, int pid = ID_ARCTIS_9)
+    private ArctisStatus ParseRawStatus(byte[] data)
+    {
+        var battery = MathHelper.Scale(data[BatteryByteIndex], BatteryMin, BatteryMax);
+        var chatVolume = MathHelper.Scale(data[ChatVolumeByteIndex], ChannelMinVolume, ChannelMaxVolume);
+        var gameVolume = MathHelper.Scale(data[GameVolumeByteIndex], ChannelMinVolume, ChannelMaxVolume);
+
+        return new (battery, chatVolume, gameVolume);
+    }
+
+    private byte[] GetRawStatus(int vid = VendorSteelSeries, int pid = IdArctis9)
     {
         IEnumerable<HidDevice>? headsets = DeviceList.Local.GetHidDevices(vid, pid);
-        var headset = DeviceList.Local.GetHidDeviceOrNull(vid, pid);
-        var returned = GetDataForHeadset(headsets);
+        var returned = ReadHeadsetStatus(headsets);
 
-        return returned.FirstOrDefault();
+        return returned.FirstOrDefault() ?? throw new InvalidOperationException("SteelSeries Arctis 9 Wireless headset not found.");
     }
 
-    private static IEnumerable<byte[]> GetDataForHeadset(IEnumerable<HidDevice> headsets)
+    private static IEnumerable<byte[]> ReadHeadsetStatus(IEnumerable<HidDevice> headsets)
     {
         foreach (var headset in headsets)
         {
             byte[]? data = null;
             try
             {
-                data = GetDataForHeadset(headset);
+                data = ReadHeadsetStatus(headset);
             }
             catch
             {
+                //Ignore exception
             }
 
             if (data != null)
@@ -62,7 +64,7 @@ public class ArctisClient
         }
     }
 
-    private static byte[] GetDataForHeadset(HidDevice headset)
+    private static byte[] ReadHeadsetStatus(HidDevice headset)
     {
         var stream = headset.Open();
         stream.Write(new byte[] { 0x0, 0x20 });

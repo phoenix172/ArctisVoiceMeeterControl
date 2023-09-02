@@ -1,0 +1,6 @@
+[submodule "Dynamic-wrapper-for-unmanaged-dll"]
+	path = Dynamic-wrapper-for-unmanaged-dll
+	url = https://github.com/A-tG/Dynamic-wrapper-for-unmanaged-dll
+[submodule "Voicemeeter-Remote-API-dll-dynamic-wrapper"]
+	path = Voicemeeter-Remote-API-dll-dynamic-wrapper
+	url = https://github.com/A-tG/Voicemeeter-Remote-API-dll-dynamic-wrapper

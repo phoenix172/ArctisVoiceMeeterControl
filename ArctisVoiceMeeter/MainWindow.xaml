@@ -5,8 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArctisVoiceMeeter"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow" Height="450" Width="800"
+        d:DataContext="{d:DesignInstance local:MainViewModel}">
+    <StackPanel>
+        <GroupBox Header="Arctis Headset" Padding="10" Margin="5">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Label>Chat Volume:</Label>
+                    <Label Content="{Binding CurrentChatVolume}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Label>Game Volume:</Label>
+                    <Label Content="{Binding CurrentGameVolume}"/>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="VoiceMeeter Channel Binding" Padding="10" Margin="5">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Label>Bind Strip:</Label>
+                    <TextBox Text="{Binding StripIndex}" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Label>Bind To Arctis Channel:</Label>
+
+
+                    <RadioButton Content="Chat" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Margin="5 0 10 0" GroupName="ArctisChannel" IsChecked="{Binding BindChatChannel}"/>
+                    <RadioButton Content="Game" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Margin="5 0 10 0" GroupName="ArctisChannel" IsChecked="{Binding BindGameChannel}"/>
+
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Label>Min Channel Volume (db):</Label>
+                    <TextBox Text="{Binding MinVolume}" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Label>Max Channel Volume (db):</Label>
+                    <TextBox Text="{Binding MaxVolume}" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <Slider Value="{Binding StripGain}"></Slider>
+    </StackPanel>
 </Window>
