@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="HidSharp" Version="2.1.0" />
+    </ItemGroup>
+
+	<Import Project="..\voicemeeter remote api wrap\voicemeeter remote api wrap.projitems" Label="Shared" />
+	<Import Project="..\dll wrapper base\dll wrapper base.projitems" Label="Shared" />
+</Project>
