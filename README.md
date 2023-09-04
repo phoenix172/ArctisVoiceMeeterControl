@@ -18,7 +18,7 @@ Goes to System Tray when minimized.
 ![image](screenshots/2.png)
 
 ## Attributions
-The following repos were used in the making of this app:
+The works of the following creators were used in the making of this app:
 
 [@A-tG](https://github.com/A-tG): https://github.com/A-tG/Voicemeeter-Remote-API-dll-dynamic-wrapper
 
