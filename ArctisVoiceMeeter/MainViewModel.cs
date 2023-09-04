@@ -1,138 +1,91 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Dynamic;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ArctisVoiceMeeter.Model;
 
 namespace ArctisVoiceMeeter;
 
-public enum ArctisChannel
+public class AppSettings
 {
-    Chat,
-    Game
-}
-
-public class MainViewModel : INotifyPropertyChanged
-{
-    private readonly ArctisClient _arctis;
-    private readonly VoiceMeeterClient _voiceMeeter;
-
-    private float _stripGain = 0f;
-    private uint _stripIndex = 7;
-    private float _maxVolume = 0;
-    private float _minVolume = -7;
-    private bool _bindGameChannel = false;
-    private bool _bindChatChannel = true;
-    private uint _currentChatVolume;
-    private uint _currentGameVolume;
-
-    public MainViewModel(ArctisClient? arctis = null, VoiceMeeterClient? voiceMeeter = null)
+    public static AppSettings Load(string settingsFile = "settings.json")
     {
-        arctis ??= new ArctisClient();
-        voiceMeeter ??= new VoiceMeeterClient();
+        AppSettings? settings = null;
 
-        _arctis = arctis;
-        _voiceMeeter = voiceMeeter;
+        if (!File.Exists(settingsFile))
+            return CreateDefaultAppSettings();
 
-        Binding = new ArctisVoiceMeeterChannelBinding(arctis, voiceMeeter)
+        try
+        {
+            var settingsJson = File.ReadAllText(settingsFile);
+            settings = JsonSerializer.Deserialize<AppSettings>(settingsJson);
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        return settings ?? CreateDefaultAppSettings();
+    }
+
+    public void Save(string settingsFile = "settings.json")
+    {
+        var settingsJson = JsonSerializer.Serialize(this);
+        File.WriteAllText(settingsFile, settingsJson);
+    }
+
+    private static AppSettings CreateDefaultAppSettings()
+    {
+        return new()
         {
             BoundStrip = 7,
             BoundChannel = ArctisChannel.Chat,
             VoiceMeeterMinVolume = -7,
             VoiceMeeterMaxVolume = 0
         };
-        Binding.Bind();
+    }
 
-        //Poll();
+    public float VoiceMeeterMaxVolume { get; set; }
+
+    public float VoiceMeeterMinVolume { get; set; }
+
+    public ArctisChannel BoundChannel { get; set; }
+
+    public uint BoundStrip { get; set; }
+}
+
+public class MainViewModel : INotifyPropertyChanged
+{
+    private readonly AppSettings _settings;
+
+    public MainViewModel(ArctisClient? arctis = null, VoiceMeeterClient? voiceMeeter = null)
+    {
+        _settings = AppSettings.Load();
+
+        arctis ??= new ArctisClient();
+        voiceMeeter ??= new VoiceMeeterClient();
+
+        Binding = new ArctisVoiceMeeterChannelBinding(arctis, voiceMeeter)
+        {
+            BoundStrip = _settings.BoundStrip,
+            BoundChannel = _settings.BoundChannel,
+            VoiceMeeterMinVolume = _settings.VoiceMeeterMinVolume,
+            VoiceMeeterMaxVolume = _settings.VoiceMeeterMaxVolume
+        };
+        Binding.Bind();
     }
 
     public ArctisVoiceMeeterChannelBinding Binding { get; }
 
-    public uint CurrentChatVolume
+    public void HandleClose()
     {
-        get => _currentChatVolume;
-        private set => SetField(ref _currentChatVolume, value);
-    }
-
-    public uint CurrentGameVolume
-    {
-        get => _currentGameVolume;
-        private set => SetField(ref _currentGameVolume, value);
-    }
-
-    public void Poll()
-    {
-        var pollTask = Task.Run(async () =>
-        {
-            while (true)
-            {
-                var status = _arctis.GetStatus();
-                CurrentChatVolume = status.ChatVolume;
-                CurrentGameVolume = status.GameVolume;
-
-                if (BindChatChannel)
-                {
-                    float scaledValue = GetScaledChannelVolume(ArctisChannel.Chat);
-                    _voiceMeeter.TrySetGain(StripIndex, scaledValue);
-                }
-
-                if (BindGameChannel)
-                {
-                    float scaledValue = GetScaledChannelVolume(ArctisChannel.Game);
-                    _voiceMeeter.TrySetGain(StripIndex, scaledValue);
-                }
-
-                await Task.Delay(1000 / 60);
-            }
-        });
-    }
-
-    private float GetScaledChannelVolume(ArctisChannel channel)
-    {
-        var volume = channel == ArctisChannel.Chat ? CurrentChatVolume : CurrentGameVolume;
-        return MathHelper.Scale(volume, 0, 100, MinVolume, MaxVolume);
-    }
-
-    public uint StripIndex
-    {
-        get => _stripIndex;
-        set => SetField(ref _stripIndex, value);
-    }
-
-    public float StripGain
-    {
-        get => _stripGain;
-        set
-        {
-            SetField(ref _stripGain, value);
-            _voiceMeeter.TrySetGain(StripIndex, StripGain);
-        }
-    }
-
-    public float MinVolume
-    {
-        get => _minVolume;
-        set => SetField(ref _minVolume, value);
-    }
-
-    public float MaxVolume
-    {
-        get => _maxVolume;
-        set => SetField(ref _maxVolume, value);
-    }
-
-    public bool BindChatChannel
-    {
-        get => _bindChatChannel;
-        set => SetField(ref _bindChatChannel, value);
-    }
-
-    public bool BindGameChannel
-    {
-        get => _bindGameChannel;
-        set => SetField(ref _bindGameChannel, value);
+        _settings.Save();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

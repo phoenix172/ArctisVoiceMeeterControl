@@ -1,27 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ArctisVoiceMeeter;
-
-public enum VoiceMeeterVirtualInputStrip
-{
-    VoiceMeeterInput = 7,
-    VoiceMeeterAuxInput = 8,
-    VoiceMeeterVAIO3Input = 9
-}
-
+namespace ArctisVoiceMeeter.Model;
 
 public class ArctisVoiceMeeterChannelBinding : INotifyPropertyChanged, IDisposable
 {
     private CancellationTokenSource? _tokenSource;
-    private Task? _bindingTask = null;
+    private Task? _bindingTask;
     private readonly ArctisClient _arctis;
     private readonly VoiceMeeterClient _voiceMeeter;
-    private int _arctisRefreshRate = 60;
+    private uint _arctisRefreshRate = 60;
     private uint _arctisGameVolume;
     private uint _arctisChatVolume;
     private float _voiceMeeterMinVolume;
@@ -54,7 +47,7 @@ public class ArctisVoiceMeeterChannelBinding : INotifyPropertyChanged, IDisposab
         private set => SetField(ref _voiceMeeterVolume, value);
     }
 
-    public int ArctisRefreshRate
+    public uint ArctisRefreshRate
     {
         get => _arctisRefreshRate;
         set => SetField(ref _arctisRefreshRate, value);
@@ -109,9 +102,17 @@ public class ArctisVoiceMeeterChannelBinding : INotifyPropertyChanged, IDisposab
         _tokenSource = new CancellationTokenSource();
         _bindingTask = Task.Factory.StartNew(async () =>
         {
-            while (!_tokenSource.IsCancellationRequested)
+            try
             {
-                await PollOnce();
+                while (!_tokenSource.IsCancellationRequested)
+                {
+                    await PollOnce();
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Unbind();
             }
         }, _tokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
     }
@@ -138,7 +139,7 @@ public class ArctisVoiceMeeterChannelBinding : INotifyPropertyChanged, IDisposab
         VoiceMeeterVolume = GetScaledChannelVolume(BoundChannel);
         _voiceMeeter.TrySetGain(BoundStrip, VoiceMeeterVolume);
 
-        await Task.Delay(1000 / ArctisRefreshRate);
+        await Task.Delay(1000 / (int)ArctisRefreshRate);
     }
 
     private uint GetArctisVolume(ArctisChannel channel)

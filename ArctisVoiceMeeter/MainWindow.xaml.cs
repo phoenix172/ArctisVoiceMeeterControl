@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,14 @@ namespace ArctisVoiceMeeter
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new MainViewModel();
+            DataContext = ViewModel;
+        }
+
+        private MainViewModel ViewModel { get; } = new();
+
+        private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
+        {
+            ViewModel.HandleClose();
         }
     }
 }

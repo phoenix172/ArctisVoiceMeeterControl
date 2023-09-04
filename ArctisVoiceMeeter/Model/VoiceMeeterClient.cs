@@ -2,7 +2,7 @@
 using AtgDev.Voicemeeter;
 using System;
 
-namespace ArctisVoiceMeeter;
+namespace ArctisVoiceMeeter.Model;
 
 public class VoiceMeeterClient : IDisposable
 {
@@ -17,7 +17,7 @@ public class VoiceMeeterClient : IDisposable
 
     public bool TrySetGain(uint stripIndex, float dbValue)
     {
-        int result = _api.SetParameter($"Strip[{stripIndex}].gain",dbValue);
+        int result = _api.SetParameter($"Strip[{stripIndex}].gain", dbValue);
         return result == 0;
     }
 

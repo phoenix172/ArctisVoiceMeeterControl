@@ -4,12 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArctisVoiceMeeter"
+        xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        d:DataContext="{d:DesignInstance local:MainViewModel}">
+        Title="Arctis VoiceMeeter Control"
+        d:DataContext="{d:DesignInstance local:MainViewModel}" SizeToContent="WidthAndHeight"
+        Closing="MainWindow_OnClosing">
     <StackPanel
+        Orientation="Horizontal"
         DataContext="{Binding Binding}"
-        d:DataContext="{d:DesignInstance local:ArctisVoiceMeeterChannelBinding}">
+        d:DataContext="{d:DesignInstance model:ArctisVoiceMeeterChannelBinding}">
         <GroupBox Header="Arctis Headset" Padding="10" Margin="5" >
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="3">
@@ -24,15 +27,7 @@
                     <Label>Refresh Rate:</Label>
                     <Label Content="{Binding ArctisRefreshRate}"/>
                 </StackPanel>
-            </StackPanel>
-        </GroupBox>
 
-        <GroupBox Header="VoiceMeeter Channel Binding" Padding="10" Margin="5">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="3">
-                    <Label>Bind Strip:</Label>
-                    <TextBox Text="{Binding BoundStrip}" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
-                </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="3">
                     <Label>Bind To Arctis Channel:</Label>
 
@@ -45,15 +40,30 @@
                                  GroupName="ArctisChannel" IsChecked="{Binding BindGameChannel}"/>
 
                 </StackPanel>
+            </StackPanel>
+        </GroupBox>
 
-                <StackPanel Orientation="Horizontal" Margin="3">
-                    <Label>Min Channel Volume (db):</Label>
-                    <TextBox Text="{Binding VoiceMeeterMinVolume}"
+        <GroupBox Header="VoiceMeeter Channel Binding" Padding="10" Margin="5">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
+                    <Label>Bind Strip:</Label>
+                    <TextBox Text="{Binding BoundStrip, UpdateSourceTrigger=PropertyChanged}"
                              VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="3">
+
+                <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
+                    <Label>Min Channel Volume (db):</Label>
+                    <TextBox Text="{Binding VoiceMeeterMinVolume, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
                     <Label>Max Channel Volume (db):</Label>
-                    <TextBox Text="{Binding VoiceMeeterMaxVolume}"
+                    <TextBox Text="{Binding VoiceMeeterMaxVolume, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
+                    <Label>Current Volume (db):</Label>
+                    <Label Content="{Binding VoiceMeeterVolume, StringFormat=N2}"
                              VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
                 </StackPanel>
             </StackPanel>

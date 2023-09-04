@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using HidSharp;
 
-namespace ArctisVoiceMeeter;
+namespace ArctisVoiceMeeter.Model;
 
 public record ArctisStatus(uint Battery, uint ChatVolume, uint GameVolume);
 
@@ -21,6 +22,8 @@ public class ArctisClient
     private const uint ChatVolumeByteIndex = 10;
     private const uint GameVolumeByteIndex = 11;
 
+    private HidDevice? _lastSuccessfulDevice;
+
     public ArctisStatus GetStatus()
     {
         var data = GetRawStatus();
@@ -34,34 +37,49 @@ public class ArctisClient
         var chatVolume = MathHelper.Scale(data[ChatVolumeByteIndex], ChannelMinVolume, ChannelMaxVolume);
         var gameVolume = MathHelper.Scale(data[GameVolumeByteIndex], ChannelMinVolume, ChannelMaxVolume);
 
-        return new (battery, chatVolume, gameVolume);
+        return new(battery, chatVolume, gameVolume);
     }
 
     private byte[] GetRawStatus(int vid = VendorSteelSeries, int pid = IdArctis9)
     {
         IEnumerable<HidDevice>? headsets = DeviceList.Local.GetHidDevices(vid, pid);
-        var returned = ReadHeadsetStatus(headsets);
-
-        return returned.FirstOrDefault() ?? throw new InvalidOperationException("SteelSeries Arctis 9 Wireless headset not found.");
+        var status = ReadHeadsetStatus(headsets);
+        return status;
     }
 
-    private static IEnumerable<byte[]> ReadHeadsetStatus(IEnumerable<HidDevice> headsets)
+    private byte[] ReadHeadsetStatus(IEnumerable<HidDevice> headsets)
     {
+        if (_lastSuccessfulDevice != null &&
+            TryReadHeadsetStatus(_lastSuccessfulDevice, out var bytes))
+            return bytes;
+
         foreach (var headset in headsets)
         {
-            byte[]? data = null;
-            try
-            {
-                data = ReadHeadsetStatus(headset);
-            }
-            catch
-            {
-                //Ignore exception
-            }
-
-            if (data != null)
-                yield return data;
+            if (TryReadHeadsetStatus(headset, out bytes))
+                return bytes;
         }
+
+        throw new InvalidOperationException("SteelSeries Arctis 9 Wireless headset not found.");
+    }
+
+    private bool TryReadHeadsetStatus(HidDevice headset, out byte[] bytes)
+    {
+        bytes = Array.Empty<byte>();
+        try
+        {
+            var data = ReadHeadsetStatus(headset);
+            if (data.Any())
+            {
+                _lastSuccessfulDevice = headset;
+                bytes = data;
+                return true;
+            }
+        }
+        catch
+        {
+            //Ignore exception
+        }
+        return false;
     }
 
     private static byte[] ReadHeadsetStatus(HidDevice headset)
