@@ -9,7 +9,7 @@ using ArctisVoiceMeeter.Model;
 
 namespace ArctisVoiceMeeter;
 
-public class MainViewModel : INotifyPropertyChanged
+public class MainViewModel
 {
     private readonly AppSettings _settings;
 
