@@ -5,7 +5,7 @@ Uses the USB Transmitter, not Bluetooth.
 
 ## Requirements
 - SteelSeries Arctis 9 Headset (support for other Arctis headsets should be easy to add)
-- VoiceMeeter installed and Set Up
+- VoiceMeeter installed and set up
 
 ## Usage 
 Just run with the Arctis transmitter connected.
