@@ -1,4 +1,4 @@
-﻿namespace ArctisVoiceMeeter;
+﻿namespace ArctisVoiceMeeter.Infrastructure;
 
 public class MathHelper
 {

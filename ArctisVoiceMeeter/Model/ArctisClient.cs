@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ArctisVoiceMeeter.Infrastructure;
 using HidSharp;
 
 namespace ArctisVoiceMeeter.Model;

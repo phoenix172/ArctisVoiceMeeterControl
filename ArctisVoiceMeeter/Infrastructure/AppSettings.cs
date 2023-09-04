@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.Json;
 using ArctisVoiceMeeter.Model;
 
-namespace ArctisVoiceMeeter;
+namespace ArctisVoiceMeeter.Infrastructure;
 
 public class AppSettings
 {
@@ -19,7 +19,7 @@ public class AppSettings
             var settingsJson = File.ReadAllText(settingsFile);
             settings = JsonSerializer.Deserialize<AppSettings>(settingsJson);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
         }

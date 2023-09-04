@@ -7,6 +7,7 @@
         xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
         mc:Ignorable="d"
         Title="Arctis VoiceMeeter Control"
+        Icon="/Infrastructure/Icon.png"
         d:DataContext="{d:DesignInstance local:MainViewModel}" SizeToContent="WidthAndHeight"
         Closing="MainWindow_OnClosing">
     <StackPanel
@@ -63,7 +64,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
                     <Label>Current Volume (db):</Label>
-                    <Label Content="{Binding VoiceMeeterVolume, StringFormat=N2}"
+                    <Label Content="{Binding VoiceMeeterVolume}" ContentStringFormat="0.00"
                              VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
                 </StackPanel>
             </StackPanel>

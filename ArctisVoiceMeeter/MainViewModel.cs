@@ -5,6 +5,7 @@ using System.Dynamic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using ArctisVoiceMeeter.Infrastructure;
 using ArctisVoiceMeeter.Model;
 
 namespace ArctisVoiceMeeter;

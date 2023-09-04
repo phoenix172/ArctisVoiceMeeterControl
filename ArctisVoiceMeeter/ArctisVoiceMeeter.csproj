@@ -6,11 +6,20 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	  <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ArctisVoiceMeeterControlIconTransparent.png" />
+  </ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="HidSharp" Version="2.1.0" />
     </ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Infrastructure\Icon.png" />
+	</ItemGroup>
 
 	<Import Project="..\Voicemeeter-Remote-API-dll-dynamic-wrapper\voicemeeter remote api wrap\voicemeeter remote api wrap.projitems" Label="Shared" />
 	<Import Project="..\Dynamic-wrapper-for-unmanaged-dll\dll wrapper base\dll wrapper base.projitems" Label="Shared" />
