@@ -33,5 +33,21 @@ namespace ArctisVoiceMeeter
         {
             ViewModel.HandleClose();
         }
+
+        private void TaskBarIcon_OnTrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Normal;
+            ShowInTaskbar = true;
+        }
+
+        private void MainWindow_OnStateChanged(object? sender, EventArgs e)
+        {
+            ShowInTaskbar = WindowState != WindowState.Minimized;
+        }
+
+        private void ExitMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 }

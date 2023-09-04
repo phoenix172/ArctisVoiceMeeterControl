@@ -5,15 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArctisVoiceMeeter"
         xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
         Title="Arctis VoiceMeeter Control"
-        Icon="/Infrastructure/Icon.png"
+        Icon="/Infrastructure/Icon.ico"
         d:DataContext="{d:DesignInstance local:MainViewModel}" SizeToContent="WidthAndHeight"
-        Closing="MainWindow_OnClosing">
+        Closing="MainWindow_OnClosing"
+        StateChanged="MainWindow_OnStateChanged"
+        ResizeMode="CanMinimize">
     <StackPanel
         Orientation="Horizontal"
         DataContext="{Binding Binding}"
         d:DataContext="{d:DesignInstance model:ArctisVoiceMeeterChannelBinding}">
+        <tb:TaskbarIcon
+                        IconSource="/Infrastructure/Icon.ico"
+                        ToolTipText="Arctis VoiceMeeter Control"
+                        TrayMouseDoubleClick="TaskbarIcon_OnTrayMouseDoubleClick">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Exit" Click="ExitMenuItem_OnClick"/>
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
         <GroupBox Header="Arctis Headset" Padding="10" Margin="5" >
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="3">

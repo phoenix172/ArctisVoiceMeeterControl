@@ -33,7 +33,7 @@ public partial class ArctisVoiceMeeterChannelBinding : INotifyPropertyChanged, I
         {
             try
             {
-                while (token.IsCancellationRequested)
+                while (!token.IsCancellationRequested)
                 {
                     await PollOnce();
                 }

@@ -11,14 +11,16 @@
 
   <ItemGroup>
     <None Remove="ArctisVoiceMeeterControlIconTransparent.png" />
+    <None Remove="Infrastructure\Icon.ico" />
   </ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
 		<PackageReference Include="HidSharp" Version="2.1.0" />
     </ItemGroup>
 
 	<ItemGroup>
-	  <Resource Include="Infrastructure\Icon.png" />
+	  <Resource Include="Infrastructure\Icon.ico" />
 	</ItemGroup>
 
 	<Import Project="..\Voicemeeter-Remote-API-dll-dynamic-wrapper\voicemeeter remote api wrap\voicemeeter remote api wrap.projitems" Label="Shared" />
