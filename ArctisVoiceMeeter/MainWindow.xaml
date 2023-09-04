@@ -20,7 +20,7 @@
         <tb:TaskbarIcon
                         IconSource="/Infrastructure/Icon.ico"
                         ToolTipText="Arctis VoiceMeeter Control"
-                        TrayMouseDoubleClick="TaskbarIcon_OnTrayMouseDoubleClick">
+                        TrayMouseDoubleClick="TaskBarIcon_OnTrayMouseDoubleClick">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Exit" Click="ExitMenuItem_OnClick"/>
