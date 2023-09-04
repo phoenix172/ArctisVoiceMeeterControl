@@ -13,9 +13,9 @@ Just run with the Arctis transmitter connected.
 
 Goes to System Tray when minimized.
 
-![image](https://github.com/phoenix172/ArctisVoiceMeeter/assets/11656684/e9430500-7316-440c-8a8d-c2424311fd89)
+![image](screenshots/1.png)
 
-![image](https://github.com/phoenix172/ArctisVoiceMeeter/assets/11656684/1535c228-8d74-4b11-b1b3-cf8b49992dc5)
+![image](screenshots/2.png)
 
 ## Attributions
 The following repos were used in the making of this app:
