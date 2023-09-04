@@ -17,3 +17,12 @@ Goes to System Tray when minimized.
 
 ![image](https://github.com/phoenix172/ArctisVoiceMeeter/assets/11656684/1535c228-8d74-4b11-b1b3-cf8b49992dc5)
 
+## Attributions
+The following repos were used in the making of this app:
+
+[@A-tG](https://github.com/A-tG): https://github.com/A-tG/Voicemeeter-Remote-API-dll-dynamic-wrapper
+
+[@crazyklatsch](https://github.com/crazyklatsch): https://github.com/crazyklatsch/Arctis7_BatteryReader
+
+[@Sapd](https://github.com/Sapd): https://github.com/Sapd/HeadsetControl
+
