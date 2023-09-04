@@ -7,16 +7,22 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         d:DataContext="{d:DesignInstance local:MainViewModel}">
-    <StackPanel>
-        <GroupBox Header="Arctis Headset" Padding="10" Margin="5">
+    <StackPanel
+        DataContext="{Binding Binding}"
+        d:DataContext="{d:DesignInstance local:ArctisVoiceMeeterChannelBinding}">
+        <GroupBox Header="Arctis Headset" Padding="10" Margin="5" >
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="3">
                     <Label>Chat Volume:</Label>
-                    <Label Content="{Binding CurrentChatVolume}"/>
+                    <Label Content="{Binding ArctisChatVolume}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="3">
                     <Label>Game Volume:</Label>
-                    <Label Content="{Binding CurrentGameVolume}"/>
+                    <Label Content="{Binding ArctisGameVolume}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Label>Refresh Rate:</Label>
+                    <Label Content="{Binding ArctisRefreshRate}"/>
                 </StackPanel>
             </StackPanel>
         </GroupBox>
@@ -25,28 +31,32 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="3">
                     <Label>Bind Strip:</Label>
-                    <TextBox Text="{Binding StripIndex}" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
+                    <TextBox Text="{Binding BoundStrip}" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="3">
                     <Label>Bind To Arctis Channel:</Label>
 
 
-                    <RadioButton Content="Chat" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Margin="5 0 10 0" GroupName="ArctisChannel" IsChecked="{Binding BindChatChannel}"/>
-                    <RadioButton Content="Game" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Margin="5 0 10 0" GroupName="ArctisChannel" IsChecked="{Binding BindGameChannel}"/>
+                    <RadioButton Content="Chat" VerticalAlignment="Stretch"
+                                 VerticalContentAlignment="Center" Margin="5 0 10 0"
+                                 GroupName="ArctisChannel" IsChecked="{Binding BindChatChannel}"/>
+                    <RadioButton Content="Game" VerticalAlignment="Stretch"
+                                 VerticalContentAlignment="Center" Margin="5 0 10 0"
+                                 GroupName="ArctisChannel" IsChecked="{Binding BindGameChannel}"/>
 
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Margin="3">
                     <Label>Min Channel Volume (db):</Label>
-                    <TextBox Text="{Binding MinVolume}" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
+                    <TextBox Text="{Binding VoiceMeeterMinVolume}"
+                             VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="3">
                     <Label>Max Channel Volume (db):</Label>
-                    <TextBox Text="{Binding MaxVolume}" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
+                    <TextBox Text="{Binding VoiceMeeterMaxVolume}"
+                             VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
                 </StackPanel>
             </StackPanel>
         </GroupBox>
-
-        <Slider Value="{Binding StripGain}"></Slider>
     </StackPanel>
 </Window>

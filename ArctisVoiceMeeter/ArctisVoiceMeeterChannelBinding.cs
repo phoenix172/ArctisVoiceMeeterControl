@@ -1,54 +1,174 @@
-﻿//using System.Threading;
-//using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
-//namespace ArctisVoiceMeeter;
+namespace ArctisVoiceMeeter;
 
-//public enum VoiceMeeterVirtualInputStrip
-//{
-//    VoiceMeeterInput = 7,
-//    VoiceMeeterAuxInput = 8,
-//    VoiceMeeterVAIO3Input = 9
-//}
+public enum VoiceMeeterVirtualInputStrip
+{
+    VoiceMeeterInput = 7,
+    VoiceMeeterAuxInput = 8,
+    VoiceMeeterVAIO3Input = 9
+}
 
 
-//public class ArctisVoiceMeeterChannelBinding 
-//{
-//    private CancellationTokenSource _tokenSource;
-//    private Task? bindingTask = null;
+public class ArctisVoiceMeeterChannelBinding : INotifyPropertyChanged, IDisposable
+{
+    private CancellationTokenSource? _tokenSource;
+    private Task? _bindingTask = null;
+    private readonly ArctisClient _arctis;
+    private readonly VoiceMeeterClient _voiceMeeter;
+    private int _arctisRefreshRate = 60;
+    private uint _arctisGameVolume;
+    private uint _arctisChatVolume;
+    private float _voiceMeeterMinVolume;
+    private float _voiceMeeterMaxVolume;
+    private ArctisChannel _boundChannel;
+    private uint _boundStrip;
+    private float _voiceMeeterVolume;
 
-//    public uint ArctisGameVolume { get; set; }
-//    public uint ArctisChatVolume { get; set; }
-//    public float VoiceMeeterVolume { get; }
-//    public float VoiceMeeterMinVolume { get; set; }
-//    public float VoiceMeeterMaxVolume { get; set; }
+    public ArctisVoiceMeeterChannelBinding(ArctisClient arctis, VoiceMeeterClient voiceMeeter)
+    {
+        _arctis = arctis;
+        _voiceMeeter = voiceMeeter;
+    }
 
-//    public ArctisChannel BoundChannel { get; set; }
-//    //public uint
+    public bool BindChatChannel
+    {
+        get => BoundChannel == ArctisChannel.Chat;
+        set => BoundChannel = value ? ArctisChannel.Chat : ArctisChannel.Game;
+    }
 
-//    public void Poll()
-//    {
-//        var pollTask = Task.Run(async () =>
-//        {
-//            while (true)
-//            {
-//                var status = _arctis.GetStatus();
-//                CurrentChatVolume = status.ChatVolume;
-//                CurrentGameVolume = status.GameVolume;
+    public bool BindGameChannel
+    {
+        get => BoundChannel == ArctisChannel.Game;
+        set => BoundChannel = value ? ArctisChannel.Game : ArctisChannel.Chat;
+    }
 
-//                if (BindChatChannel)
-//                {
-//                    float scaledValue = GetScaledChannelVolume(ArctisChannel.Chat);
-//                    _voiceMeeter.TrySetGain(StripIndex, scaledValue);
-//                }
+    public float VoiceMeeterVolume
+    {
+        get => _voiceMeeterVolume;
+        private set => SetField(ref _voiceMeeterVolume, value);
+    }
 
-//                if (BindGameChannel)
-//                {
-//                    float scaledValue = GetScaledChannelVolume(ArctisChannel.Game);
-//                    _voiceMeeter.TrySetGain(StripIndex, scaledValue);
-//                }
+    public int ArctisRefreshRate
+    {
+        get => _arctisRefreshRate;
+        set => SetField(ref _arctisRefreshRate, value);
+    }
 
-//                await Task.Delay(1000 / 60);
-//            }
-//        });
-//    }
-//}
+    public uint ArctisGameVolume
+    {
+        get => _arctisGameVolume;
+        private set => SetField(ref _arctisGameVolume, value);
+    }
+
+    public uint ArctisChatVolume
+    {
+        get => _arctisChatVolume;
+        private set => SetField(ref _arctisChatVolume, value);
+    }
+
+    public float VoiceMeeterMinVolume
+    {
+        get => _voiceMeeterMinVolume;
+        set => SetField(ref _voiceMeeterMinVolume, value);
+    }
+
+    public float VoiceMeeterMaxVolume
+    {
+        get => _voiceMeeterMaxVolume;
+        set => SetField(ref _voiceMeeterMaxVolume, value);
+    }
+
+    public ArctisChannel BoundChannel
+    {
+        get => _boundChannel;
+        set
+        {
+            SetField(ref _boundChannel, value);
+            OnPropertyChanged(nameof(BindChatChannel));
+            OnPropertyChanged(nameof(BindGameChannel));
+        }
+    }
+
+    public uint BoundStrip
+    {
+        get => _boundStrip;
+        set => SetField(ref _boundStrip, value);
+    }
+
+    public void Bind()
+    {
+        if (_bindingTask != null)
+            return;
+
+        _tokenSource = new CancellationTokenSource();
+        _bindingTask = Task.Factory.StartNew(async () =>
+        {
+            while (!_tokenSource.IsCancellationRequested)
+            {
+                await PollOnce();
+            }
+        }, _tokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+    }
+
+    public void Unbind()
+    {
+        if (_bindingTask == null || _tokenSource == null)
+            return;
+
+        _tokenSource.Cancel();
+        _tokenSource.Dispose();
+        _bindingTask.Dispose();
+        _tokenSource = null;
+        _bindingTask = null;
+    }
+
+    private async Task PollOnce()
+    {
+        var status = _arctis.GetStatus();
+
+        ArctisChatVolume = status.ChatVolume;
+        ArctisGameVolume = status.GameVolume;
+
+        VoiceMeeterVolume = GetScaledChannelVolume(BoundChannel);
+        _voiceMeeter.TrySetGain(BoundStrip, VoiceMeeterVolume);
+
+        await Task.Delay(1000 / ArctisRefreshRate);
+    }
+
+    private uint GetArctisVolume(ArctisChannel channel)
+    {
+        return channel == ArctisChannel.Chat ? ArctisChatVolume : ArctisGameVolume;
+    }
+
+    private float GetScaledChannelVolume(ArctisChannel channel)
+    {
+        var volume = GetArctisVolume(channel);
+        return MathHelper.Scale(volume, 0, 100, VoiceMeeterMinVolume, VoiceMeeterMaxVolume);
+    }
+
+    public void Dispose()
+    {
+        Unbind();
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
+    }
+}

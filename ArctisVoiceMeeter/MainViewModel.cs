@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
 using System.Runtime.CompilerServices;
@@ -31,10 +32,23 @@ public class MainViewModel : INotifyPropertyChanged
     {
         arctis ??= new ArctisClient();
         voiceMeeter ??= new VoiceMeeterClient();
+
         _arctis = arctis;
         _voiceMeeter = voiceMeeter;
-        Poll();
+
+        Binding = new ArctisVoiceMeeterChannelBinding(arctis, voiceMeeter)
+        {
+            BoundStrip = 7,
+            BoundChannel = ArctisChannel.Chat,
+            VoiceMeeterMinVolume = -7,
+            VoiceMeeterMaxVolume = 0
+        };
+        Binding.Bind();
+
+        //Poll();
     }
+
+    public ArctisVoiceMeeterChannelBinding Binding { get; }
 
     public uint CurrentChatVolume
     {
