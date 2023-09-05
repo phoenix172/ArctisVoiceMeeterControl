@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using ArctisVoiceMeeter.Infrastructure;
 using ArctisVoiceMeeter.Model;
 
-namespace ArctisVoiceMeeter;
+namespace ArctisVoiceMeeter.ViewModels;
 
 public class MainViewModel
 {

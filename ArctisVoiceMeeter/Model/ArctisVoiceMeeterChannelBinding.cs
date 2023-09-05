@@ -2,14 +2,33 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using ArctisVoiceMeeter.Infrastructure;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ArctisVoiceMeeter.Model;
 
-public partial class ArctisVoiceMeeterChannelBinding : INotifyPropertyChanged, IDisposable
+public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDisposable
 {
     private readonly VoiceMeeterClient _voiceMeeter;
-    private readonly HeadsetPoller _headsetPoller;
+
+    [ObservableProperty] private float _voiceMeeterMinVolume;
+    [ObservableProperty] private float _voiceMeeterMaxVolume;
+    [ObservableProperty] private uint _boundStrip;
+    [ObservableProperty] private float _voiceMeeterVolume;
+
+    [NotifyPropertyChangedFor(nameof(BindChatChannel))]
+    [NotifyPropertyChangedFor(nameof(BindGameChannel))]
+    [ObservableProperty]
     private ArctisChannel _boundChannel;
+
+    public ArctisVoiceMeeterChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter)
+    {
+        HeadsetPoller = poller;
+        _voiceMeeter = voiceMeeter;
+
+        HeadsetPoller.ArctisStatusChanged += OnHeadsetStatusChanged;
+    }
+
+    public HeadsetPoller HeadsetPoller { get; }
 
     public bool BindChatChannel
     {
@@ -23,34 +42,9 @@ public partial class ArctisVoiceMeeterChannelBinding : INotifyPropertyChanged, I
         set => BoundChannel = value ? ArctisChannel.Game : ArctisChannel.Chat;
     }
 
-
-    public ArctisChannel BoundChannel
-    {
-        get => _boundChannel;
-        set
-        {
-            SetField(ref _boundChannel, value);
-            OnPropertyChanged(nameof(BindChatChannel));
-            OnPropertyChanged(nameof(BindGameChannel));
-        }
-    }
-
-    public ArctisVoiceMeeterChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter)
-    {
-        _headsetPoller = poller;
-        _voiceMeeter = voiceMeeter;
-
-        HeadsetPoller.ArctisStatusChanged += OnHeadsetStatusChanged;
-    }
-
     private void OnHeadsetStatusChanged(object? sender, ArctisStatus e)
     {
         UpdateVoiceMeeterGain(e);
-    }
-
-    public HeadsetPoller HeadsetPoller
-    {
-        get { return _headsetPoller; }
     }
 
     private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus)
@@ -68,6 +62,5 @@ public partial class ArctisVoiceMeeterChannelBinding : INotifyPropertyChanged, I
     public void Dispose()
     {
         HeadsetPoller.ArctisStatusChanged -= OnHeadsetStatusChanged;
-        //_headsetPoller.Dispose();
     }
 }

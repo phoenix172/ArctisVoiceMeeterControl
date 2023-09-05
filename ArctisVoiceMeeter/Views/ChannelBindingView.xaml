@@ -5,8 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ArctisVoiceMeeter"
              xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
+             xmlns:viewModels="clr-namespace:ArctisVoiceMeeter.ViewModels"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance model:ChannelBindingViewModel}"
+             d:DataContext="{d:DesignInstance viewModels:ChannelBindingViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel DataContext="{Binding ChannelBinding}">
         <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">

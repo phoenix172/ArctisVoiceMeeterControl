@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ArctisVoiceMeeter"
              xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
-             StartupUri="MainWindow.xaml">
+             xmlns:viewModels="clr-namespace:ArctisVoiceMeeter.ViewModels"
+             StartupUri="/Views/MainWindow.xaml">
     <Application.Resources>
          <ResourceDictionary>
-             <DataTemplate DataType="{x:Type model:ChannelBindingViewModel}">
+             <DataTemplate DataType="{x:Type viewModels:ChannelBindingViewModel}">
                  <local:ChannelBindingView />
              </DataTemplate>
          </ResourceDictionary>
