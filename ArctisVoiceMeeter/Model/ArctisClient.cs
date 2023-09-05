@@ -35,6 +35,7 @@ public class ArctisClient
     private ArctisStatus ParseRawStatus(byte[] data)
     {
         var battery = MathHelper.Scale(data[BatteryByteIndex], BatteryMin, BatteryMax);
+        battery = Math.Min(battery, (byte)100);
         var chatVolume = MathHelper.Scale(data[ChatVolumeByteIndex], ChannelMinVolume, ChannelMaxVolume);
         var gameVolume = MathHelper.Scale(data[GameVolumeByteIndex], ChannelMinVolume, ChannelMaxVolume);
 

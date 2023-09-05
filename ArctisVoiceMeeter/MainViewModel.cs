@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,34 +14,42 @@ namespace ArctisVoiceMeeter;
 public class MainViewModel
 {
     private readonly AppSettings _settings;
+    private readonly HeadsetPoller poller;
 
     public MainViewModel(ArctisClient? arctis = null, VoiceMeeterClient? voiceMeeter = null)
     {
         _settings = AppSettings.Load();
 
         arctis ??= new ArctisClient();
+        poller ??= new HeadsetPoller(arctis);
         voiceMeeter ??= new VoiceMeeterClient();
 
-        Binding = new ArctisVoiceMeeterChannelBinding(arctis, voiceMeeter)
+        HeadsetViewModel = new HeadsetViewModel(poller);
+
+        var channelBinding = new ArctisVoiceMeeterChannelBinding(poller, voiceMeeter)
         {
             BoundStrip = _settings.BoundStrip,
             BoundChannel = _settings.BoundChannel,
             VoiceMeeterMinVolume = _settings.VoiceMeeterMinVolume,
             VoiceMeeterMaxVolume = _settings.VoiceMeeterMaxVolume
         };
-        Binding.Bind();
+        channelBinding.HeadsetPoller.Bind();
+
+        ChannelBindings = new List<ChannelBindingViewModel> { new ChannelBindingViewModel(channelBinding) };
     }
 
-    public ArctisVoiceMeeterChannelBinding Binding { get; }
+    public List<ChannelBindingViewModel> ChannelBindings { get; }
+    public HeadsetViewModel HeadsetViewModel { get; set; }
 
     public void HandleClose()
     {
-        Binding.Unbind();
+        var channelBinding = ChannelBindings.First().ChannelBinding;
+        channelBinding.HeadsetPoller.Unbind();
 
-        _settings.BoundStrip = Binding.BoundStrip;
-        _settings.BoundChannel = Binding.BoundChannel;
-        _settings.VoiceMeeterMinVolume = Binding.VoiceMeeterMinVolume;
-        _settings.VoiceMeeterMaxVolume = Binding.VoiceMeeterMaxVolume;
+        _settings.BoundStrip = channelBinding.BoundStrip;
+        _settings.BoundChannel = channelBinding.BoundChannel;
+        _settings.VoiceMeeterMinVolume = channelBinding.VoiceMeeterMinVolume;
+        _settings.VoiceMeeterMaxVolume = channelBinding.VoiceMeeterMaxVolume;
 
         _settings.Save();
     }

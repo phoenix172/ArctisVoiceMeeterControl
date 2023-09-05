@@ -15,72 +15,32 @@
         ResizeMode="CanMinimize">
     <StackPanel
         Orientation="Horizontal"
-        DataContext="{Binding Binding}"
-        d:DataContext="{d:DesignInstance model:ArctisVoiceMeeterChannelBinding}">
+        d:DataContext="{d:DesignInstance local:MainViewModel}">
         <tb:TaskbarIcon
-                        IconSource="/Infrastructure/Icon.ico"
-                        ToolTipText="Arctis VoiceMeeter Control"
-                        TrayMouseDoubleClick="TaskBarIcon_OnTrayMouseDoubleClick">
+            IconSource="/Infrastructure/Icon.ico"
+            ToolTipText="Arctis VoiceMeeter Control"
+            TrayMouseDoubleClick="TaskBarIcon_OnTrayMouseDoubleClick">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Exit" Click="ExitMenuItem_OnClick"/>
+                    <MenuItem Header="Exit" Click="ExitMenuItem_OnClick" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
-        <GroupBox Header="Arctis Headset" Padding="10" Margin="5" >
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="3">
-                    <Label>Chat Volume:</Label>
-                    <Label Content="{Binding ArctisChatVolume}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="3">
-                    <Label>Game Volume:</Label>
-                    <Label Content="{Binding ArctisGameVolume}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="3">
-                    <Label>Refresh Rate:</Label>
-                    <Label Content="{Binding ArctisRefreshRate}"/>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" Margin="3">
-                    <Label>Bind To Arctis Channel:</Label>
 
 
-                    <RadioButton Content="Chat" VerticalAlignment="Stretch"
-                                 VerticalContentAlignment="Center" Margin="5 0 10 0"
-                                 GroupName="ArctisChannel" IsChecked="{Binding BindChatChannel}"/>
-                    <RadioButton Content="Game" VerticalAlignment="Stretch"
-                                 VerticalContentAlignment="Center" Margin="5 0 10 0"
-                                 GroupName="ArctisChannel" IsChecked="{Binding BindGameChannel}"/>
-
-                </StackPanel>
-            </StackPanel>
+        <GroupBox Header="Arctis Headset" Padding="10" Margin="5">
+            <local:HeadsetView DataContext="{Binding HeadsetViewModel }"></local:HeadsetView>
         </GroupBox>
 
         <GroupBox Header="VoiceMeeter Channel Binding" Padding="10" Margin="5">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-                    <Label>Bind Strip:</Label>
-                    <TextBox Text="{Binding BoundStrip, UpdateSourceTrigger=PropertyChanged}"
-                             VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-                    <Label>Min Channel Volume (db):</Label>
-                    <TextBox Text="{Binding VoiceMeeterMinVolume, UpdateSourceTrigger=PropertyChanged}"
-                             VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-                    <Label>Max Channel Volume (db):</Label>
-                    <TextBox Text="{Binding VoiceMeeterMaxVolume, UpdateSourceTrigger=PropertyChanged}"
-                             VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-                    <Label>Current Volume (db):</Label>
-                    <Label Content="{Binding VoiceMeeterVolume}" ContentStringFormat="0.00"
-                             VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MinWidth="50"/>
-                </StackPanel>
-            </StackPanel>
+            <TabControl ItemsSource="{Binding ChannelBindings}" TabStripPlacement="Left" SelectedIndex="0">
+                <TabControl.Resources>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Header" Value="{Binding Name}"></Setter>
+                    </Style>
+                </TabControl.Resources>
+            </TabControl>
+            <!--<local:ChannelBindingView DataContext="{Binding Binding}"></local:ChannelBindingView>-->
         </GroupBox>
     </StackPanel>
 </Window>

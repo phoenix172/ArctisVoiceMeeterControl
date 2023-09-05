@@ -1,90 +1,73 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using ArctisVoiceMeeter.Infrastructure;
 
 namespace ArctisVoiceMeeter.Model;
 
 public partial class ArctisVoiceMeeterChannelBinding : INotifyPropertyChanged, IDisposable
 {
-    private CancellationTokenSource? _tokenSource;
-    private Task? _bindingTask;
-    private readonly ArctisClient _arctis;
     private readonly VoiceMeeterClient _voiceMeeter;
+    private readonly HeadsetPoller _headsetPoller;
+    private ArctisChannel _boundChannel;
 
-    public ArctisVoiceMeeterChannelBinding(ArctisClient arctis, VoiceMeeterClient voiceMeeter)
+    public bool BindChatChannel
     {
-        _arctis = arctis;
-        _voiceMeeter = voiceMeeter;
+        get => BoundChannel == ArctisChannel.Chat;
+        set => BoundChannel = value ? ArctisChannel.Chat : ArctisChannel.Game;
     }
 
-    public void Bind()
+    public bool BindGameChannel
     {
-        if (_bindingTask != null)
-            return;
+        get => BoundChannel == ArctisChannel.Game;
+        set => BoundChannel = value ? ArctisChannel.Game : ArctisChannel.Chat;
+    }
 
-        _tokenSource = new CancellationTokenSource();
-        var token = _tokenSource.Token;
-        _bindingTask = Task.Factory.StartNew(async () =>
+
+    public ArctisChannel BoundChannel
+    {
+        get => _boundChannel;
+        set
         {
-            try
-            {
-                while (!token.IsCancellationRequested)
-                {
-                    await PollOnce();
-                }
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Unbind();
-            }
-        }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            SetField(ref _boundChannel, value);
+            OnPropertyChanged(nameof(BindChatChannel));
+            OnPropertyChanged(nameof(BindGameChannel));
+        }
     }
 
-    public void Unbind()
+    public ArctisVoiceMeeterChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter)
     {
-        if (_bindingTask == null || _tokenSource == null)
-            return;
+        _headsetPoller = poller;
+        _voiceMeeter = voiceMeeter;
 
-        _tokenSource.Cancel();
-        _bindingTask.Wait();
-        _tokenSource.Dispose();
-        _bindingTask.Dispose();
-        _tokenSource = null;
-        _bindingTask = null;
+        HeadsetPoller.ArctisStatusChanged += OnHeadsetStatusChanged;
     }
 
-    private async Task PollOnce()
+    private void OnHeadsetStatusChanged(object? sender, ArctisStatus e)
     {
-        var status = _arctis.GetStatus();
+        UpdateVoiceMeeterGain(e);
+    }
 
-        ArctisChatVolume = status.ChatVolume;
-        ArctisGameVolume = status.GameVolume;
+    public HeadsetPoller HeadsetPoller
+    {
+        get { return _headsetPoller; }
+    }
 
-        VoiceMeeterVolume = GetScaledChannelVolume(BoundChannel);
+    private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus)
+    {
+        VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus);
         _voiceMeeter.TrySetGain(BoundStrip, VoiceMeeterVolume);
-
-        await Task.Delay(1000 / (int)ArctisRefreshRate);
     }
 
-    private uint GetArctisVolume(ArctisChannel channel)
+    private float GetScaledChannelVolume(ArctisStatus status)
     {
-        return channel == ArctisChannel.Chat ? ArctisChatVolume : ArctisGameVolume;
-    }
-
-    private float GetScaledChannelVolume(ArctisChannel channel)
-    {
-        var volume = GetArctisVolume(channel);
+        var volume = status.GetArctisVolume(BoundChannel);
         return MathHelper.Scale(volume, 0, 100, VoiceMeeterMinVolume, VoiceMeeterMaxVolume);
     }
 
     public void Dispose()
     {
-        Unbind();
+        HeadsetPoller.ArctisStatusChanged -= OnHeadsetStatusChanged;
+        //_headsetPoller.Dispose();
     }
 }
