@@ -16,6 +16,8 @@ Goes to System Tray when minimized.
 
 ![image](screenshots/2.png)
 
+![image](screenshots/3.png)
+
 ## Attributions
 The works of the following creators were used in the making of this app:
 
