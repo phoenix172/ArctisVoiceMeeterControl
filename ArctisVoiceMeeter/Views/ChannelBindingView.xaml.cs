@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArctisVoiceMeeter.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,10 @@ namespace ArctisVoiceMeeter
     /// </summary>
     public partial class ChannelBindingView : UserControl
     {
-        public ChannelBindingView()
+        public ChannelBindingView(ChannelBindingViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
     }
 }

@@ -13,13 +13,8 @@ namespace ArctisVoiceMeeter.ViewModels;
 
 public class MainViewModel
 {
-    private readonly AppSettings _settings;
-    private readonly HeadsetPoller _poller;
-
-    public MainViewModel(ArctisClient? arctis = null, VoiceMeeterClient? voiceMeeter = null)
+    public MainViewModel()
     {
-        //_settings = AppSettings.Load();
-
         //arctis ??= new ArctisClient();
         //_poller ??= new HeadsetPoller(arctis);
         //voiceMeeter ??= new VoiceMeeterClient();
@@ -38,8 +33,8 @@ public class MainViewModel
         //ChannelBindings = new List<ChannelBindingViewModel> { new ChannelBindingViewModel(channelBinding) };
     }
 
-    public List<ChannelBindingViewModel> ChannelBindings { get; }
-    public HeadsetViewModel HeadsetViewModel { get; set; }
+    //public List<ChannelBindingViewModel> ChannelBindings { get; }
+    //public HeadsetViewModel HeadsetViewModel { get; set; }
 
     public void HandleClose()
     {

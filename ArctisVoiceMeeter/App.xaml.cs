@@ -7,9 +7,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using ArctisVoiceMeeter.Infrastructure;
 using ArctisVoiceMeeter.Model;
+using ArctisVoiceMeeter.ViewModels;
+using Awesome.Net.WritableOptions;
+using Awesome.Net.WritableOptions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace ArctisVoiceMeeter
 {
@@ -42,27 +46,37 @@ namespace ArctisVoiceMeeter
 
             services.AddSingleton<VoiceMeeterClient>();
 
-            var presetsConfiguration = context.Configuration.GetSection("Presets");
-            ArctisVoiceMeeterPresets? presets = null;
-            if (presetsConfiguration.Value == null)
-            {
-                presets = new ArctisVoiceMeeterPresets();
-                services.ConfigureWritable<ArctisVoiceMeeterPresets>(presets);
-                services.Configure<>()
-            }
+            services.ConfigureWritableOptions<ArctisVoiceMeeterPresets>((IConfigurationRoot) context.Configuration, "Presets");
 
+            services.AddTransient<HeadsetViewModel>();
 
-            services.ConfigureWritable<ArctisVoiceMeeterPresets>();
-
+            services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainWindow>();
+        }
+
+        private static void InitializePresets(IServiceScope scope)
+        {
+            var presets = scope.ServiceProvider.GetService<IWritableOptions<ArctisVoiceMeeterPresets>>();
+
+            if (presets?.Value.Count == 0)
+                presets.Update(x => x.Add("Preset", new ArctisVoiceMeeterChannelBindingOptions
+                {
+                    BoundStrip = 0,
+                    VoiceMeeterMaxVolume = 0,
+                    VoiceMeeterMinVolume = 0,
+                    VoiceMeeterVolume = 0
+                }));
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             using var scope = _host.Services.CreateScope();
+
+            InitializePresets(scope);
+
             var mainWindow = scope.ServiceProvider.GetService<MainWindow>();
 
-            var presets = scope.ServiceProvider.GetRequiredService<ArctisVoiceMeeterPresets>();
+            var presets = scope.ServiceProvider.GetRequiredService<IOptions<ArctisVoiceMeeterPresets>>();
 
             mainWindow.Show();
         }

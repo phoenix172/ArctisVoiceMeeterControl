@@ -4,18 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArctisVoiceMeeter"
-        xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
-        xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:tb="http://www.hardcodet.net/taskbar" xmlns:viewmodels="clr-namespace:ArctisVoiceMeeter.ViewModels"
         mc:Ignorable="d"
         Title="Arctis VoiceMeeter Control"
         Icon="/Infrastructure/Icon.ico"
-        d:DataContext="{d:DesignInstance local:MainViewModel}" SizeToContent="WidthAndHeight"
-        Closing="MainWindow_OnClosing"
+        d:DataContext="{d:DesignInstance viewmodels:MainViewModel, IsDesignTimeCreatable=false}" SizeToContent="WidthAndHeight"
         StateChanged="MainWindow_OnStateChanged"
         ResizeMode="CanMinimize">
-    <StackPanel
-        Orientation="Horizontal"
-        d:DataContext="{d:DesignInstance local:MainViewModel}">
+    <StackPanel Orientation="Horizontal">
         <tb:TaskbarIcon
             IconSource="/Infrastructure/Icon.ico"
             ToolTipText="Arctis VoiceMeeter Control"
@@ -29,7 +25,7 @@
 
 
         <GroupBox Header="Arctis Headset" Padding="10" Margin="5">
-            <local:HeadsetView DataContext="{Binding HeadsetViewModel }"></local:HeadsetView>
+            <local:HeadsetView DataContext="{Binding HeadsetViewModel}"></local:HeadsetView>
         </GroupBox>
 
         <GroupBox Header="VoiceMeeter Channel Binding" Padding="10" Margin="5">

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArctisVoiceMeeter.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,12 @@ namespace ArctisVoiceMeeter
     /// </summary>
     public partial class HeadsetView : UserControl
     {
-        public HeadsetView()
+        public HeadsetView() { }
+
+        public HeadsetView(HeadsetViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
     }
 }
