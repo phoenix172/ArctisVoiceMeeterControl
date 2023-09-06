@@ -49,6 +49,7 @@ namespace ArctisVoiceMeeter
             services.ConfigureWritableOptions<ArctisVoiceMeeterPresets>((IConfigurationRoot) context.Configuration, "Presets");
 
             services.AddTransient<HeadsetViewModel>();
+            services.AddSingleton<ChannelBindingService>();
 
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainWindow>();
@@ -68,7 +69,13 @@ namespace ArctisVoiceMeeter
                 }));
         }
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            await _host.StopAsync();
+            base.OnExit(e);
+        }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
         {
             using var scope = _host.Services.CreateScope();
 
@@ -79,12 +86,6 @@ namespace ArctisVoiceMeeter
             var presets = scope.ServiceProvider.GetRequiredService<IOptions<ArctisVoiceMeeterPresets>>();
 
             mainWindow.Show();
-        }
-
-        protected override async void OnExit(ExitEventArgs e)
-        {
-            await _host.StopAsync();
-            base.OnExit(e);
         }
     }
 }

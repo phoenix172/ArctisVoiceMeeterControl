@@ -9,44 +9,47 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:ChannelBindingViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel DataContext="{Binding ChannelBinding}">
-        <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-            <Label>Bind Strip:</Label>
-            <TextBox Text="{Binding BoundStrip, UpdateSourceTrigger=PropertyChanged}"
+    <StackPanel>
+        <StackPanel DataContext="{Binding ChannelBinding.Options}">
+            <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
+                <Label>Bind Strip:</Label>
+                <TextBox Text="{Binding BoundStrip, UpdateSourceTrigger=PropertyChanged}"
                      VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                      MinWidth="50" />
-        </StackPanel>
+            </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-            <Label>Min Channel Volume (db):</Label>
-            <TextBox Text="{Binding VoiceMeeterMinVolume, UpdateSourceTrigger=PropertyChanged}"
+            <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
+                <Label>Min Channel Volume (db):</Label>
+                <TextBox Text="{Binding VoiceMeeterMinVolume, UpdateSourceTrigger=PropertyChanged}"
                      VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                      MinWidth="50" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-            <Label>Max Channel Volume (db):</Label>
-            <TextBox Text="{Binding VoiceMeeterMaxVolume, UpdateSourceTrigger=PropertyChanged}"
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
+                <Label>Max Channel Volume (db):</Label>
+                <TextBox Text="{Binding VoiceMeeterMaxVolume, UpdateSourceTrigger=PropertyChanged}"
                      VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                      MinWidth="50" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-            <Label>Current Volume (db):</Label>
-            <Label Content="{Binding VoiceMeeterVolume}" ContentStringFormat="0.00"
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
+                <Label>Current Volume (db):</Label>
+                <Label Content="{Binding VoiceMeeterVolume}" ContentStringFormat="0.00"
                    VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                    MinWidth="50" />
+            </StackPanel>
         </StackPanel>
+        <StackPanel DataContext="{Binding ChannelBinding}">
+            <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
+                <Label>Bind To Arctis Channel:</Label>
 
-        <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-            <Label>Bind To Arctis Channel:</Label>
 
-
-            <RadioButton Content="Chat" VerticalAlignment="Stretch"
+                <RadioButton Content="Chat" VerticalAlignment="Stretch"
                          VerticalContentAlignment="Center" Margin="5 0 10 0"
                          GroupName="ArctisChannel" IsChecked="{Binding BindChatChannel}" />
-            <RadioButton Content="Game" VerticalAlignment="Stretch"
+                <RadioButton Content="Game" VerticalAlignment="Stretch"
                          VerticalContentAlignment="Center" Margin="5 0 10 0"
                          GroupName="ArctisChannel" IsChecked="{Binding BindGameChannel}" />
 
+            </StackPanel>
         </StackPanel>
     </StackPanel>
 </UserControl>

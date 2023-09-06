@@ -21,6 +21,8 @@ namespace ArctisVoiceMeeter
     /// </summary>
     public partial class ChannelBindingView : UserControl
     {
+        public ChannelBindingView() { InitializeComponent(); }
+
         public ChannelBindingView(ChannelBindingViewModel viewModel)
         {
             InitializeComponent();

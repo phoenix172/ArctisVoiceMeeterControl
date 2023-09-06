@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:ArctisVoiceMeeter"
              xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
              xmlns:viewModels="clr-namespace:ArctisVoiceMeeter.ViewModels"
+             Startup="Application_Startup"
              >
     <!--StartupUri="/Views/MainWindow.xaml"-->
     <Application.Resources>

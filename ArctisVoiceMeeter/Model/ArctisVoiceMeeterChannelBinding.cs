@@ -10,7 +10,8 @@ namespace ArctisVoiceMeeter.Model;
 public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDisposable
 {
     private readonly VoiceMeeterClient _voiceMeeter;
-    private readonly ArctisVoiceMeeterChannelBindingOptions _options;
+   
+    public ArctisVoiceMeeterChannelBindingOptions Options { get; }
 
     [NotifyPropertyChangedFor(nameof(BindChatChannel))]
     [NotifyPropertyChangedFor(nameof(BindGameChannel))]
@@ -21,7 +22,7 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
     {
         HeadsetPoller = poller;
         _voiceMeeter = voiceMeeter;
-        _options = options;
+        Options = options;
 
         HeadsetPoller.ArctisStatusChanged += OnHeadsetStatusChanged;
     }
@@ -47,14 +48,14 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
 
     private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus)
     {
-        _options.VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus);
-        _voiceMeeter.TrySetGain(_options.BoundStrip, _options.VoiceMeeterVolume);
+        Options.VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus);
+        _voiceMeeter.TrySetGain(Options.BoundStrip, Options.VoiceMeeterVolume);
     }
 
     private float GetScaledChannelVolume(ArctisStatus status)
     {
         var volume = status.GetArctisVolume(BoundChannel);
-        return MathHelper.Scale(volume, 0, 100, _options.VoiceMeeterMinVolume, _options.VoiceMeeterMaxVolume);
+        return MathHelper.Scale(volume, 0, 100, Options.VoiceMeeterMinVolume, Options.VoiceMeeterMaxVolume);
     }
 
     public void Dispose()
