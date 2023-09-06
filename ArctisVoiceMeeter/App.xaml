@@ -4,7 +4,8 @@
              xmlns:local="clr-namespace:ArctisVoiceMeeter"
              xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
              xmlns:viewModels="clr-namespace:ArctisVoiceMeeter.ViewModels"
-             StartupUri="/Views/MainWindow.xaml">
+             >
+    <!--StartupUri="/Views/MainWindow.xaml"-->
     <Application.Resources>
          <ResourceDictionary>
              <DataTemplate DataType="{x:Type viewModels:ChannelBindingViewModel}">

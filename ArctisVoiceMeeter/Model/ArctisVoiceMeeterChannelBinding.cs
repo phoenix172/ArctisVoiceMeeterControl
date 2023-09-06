@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Security.Authentication.ExtendedProtection;
 using ArctisVoiceMeeter.Infrastructure;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -9,21 +10,18 @@ namespace ArctisVoiceMeeter.Model;
 public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDisposable
 {
     private readonly VoiceMeeterClient _voiceMeeter;
-
-    [ObservableProperty] private float _voiceMeeterMinVolume;
-    [ObservableProperty] private float _voiceMeeterMaxVolume;
-    [ObservableProperty] private uint _boundStrip;
-    [ObservableProperty] private float _voiceMeeterVolume;
+    private readonly ArctisVoiceMeeterChannelBindingOptions _options;
 
     [NotifyPropertyChangedFor(nameof(BindChatChannel))]
     [NotifyPropertyChangedFor(nameof(BindGameChannel))]
     [ObservableProperty]
     private ArctisChannel _boundChannel;
 
-    public ArctisVoiceMeeterChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter)
+    public ArctisVoiceMeeterChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter, ArctisVoiceMeeterChannelBindingOptions options)
     {
         HeadsetPoller = poller;
         _voiceMeeter = voiceMeeter;
+        _options = options;
 
         HeadsetPoller.ArctisStatusChanged += OnHeadsetStatusChanged;
     }
@@ -49,14 +47,14 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
 
     private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus)
     {
-        VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus);
-        _voiceMeeter.TrySetGain(BoundStrip, VoiceMeeterVolume);
+        _options.VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus);
+        _voiceMeeter.TrySetGain(_options.BoundStrip, _options.VoiceMeeterVolume);
     }
 
     private float GetScaledChannelVolume(ArctisStatus status)
     {
         var volume = status.GetArctisVolume(BoundChannel);
-        return MathHelper.Scale(volume, 0, 100, VoiceMeeterMinVolume, VoiceMeeterMaxVolume);
+        return MathHelper.Scale(volume, 0, 100, _options.VoiceMeeterMinVolume, _options.VoiceMeeterMaxVolume);
     }
 
     public void Dispose()
