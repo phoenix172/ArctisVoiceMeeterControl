@@ -39,14 +39,25 @@ namespace ArctisVoiceMeeter
                 AddBinding(options);
         }
 
-        public void AddBinding(ArctisVoiceMeeterChannelBindingOptions options)
+        public ArctisVoiceMeeterChannelBinding AddNewBinding()
+        {
+            string bindingName = "Preset " + (Bindings.Count + 1);
+            while (BindingExists(bindingName))
+                bindingName += "_";
+
+            return AddBinding(new ArctisVoiceMeeterChannelBindingOptions(bindingName));
+        }
+
+        public ArctisVoiceMeeterChannelBinding AddBinding(ArctisVoiceMeeterChannelBindingOptions options)
         {
             if (_presets.Value.Any(x => x.BindingName == options.BindingName))
                 throw new ArgumentException("A Channel Binding with this name already exists.", nameof(options.BindingName));
 
             _presets.Update(x => x.Add(options));
-            
-            Bindings.Add(CreateBinding(options));
+
+            var binding = CreateBinding(options);
+            Bindings.Add(binding);
+            return binding;
         }
 
         public void ChangeBinding(ArctisVoiceMeeterChannelBindingOptions binding)
@@ -74,6 +85,7 @@ namespace ArctisVoiceMeeter
                 var bindingOption = presets.FirstOrDefault(x => x.BindingName == name);
                 if (bindingOption == null) return;
                 presets.Remove(bindingOption);
+                result = true;
             });
 
             if (!result) return false;
@@ -90,14 +102,6 @@ namespace ArctisVoiceMeeter
             ClearBindings();
         }
 
-        private ObservableCollection<ArctisVoiceMeeterChannelBinding> CreateBindingsCollection()
-        {
-            ArctisVoiceMeeterPresets options = _presets.Value;
-            var bindings = options.Select(CreateBinding);
-
-            return new ObservableCollection<ArctisVoiceMeeterChannelBinding>(bindings);
-        }
-
         private ArctisVoiceMeeterChannelBinding CreateBinding(ArctisVoiceMeeterChannelBindingOptions options)
         {
             var voiceMeeterClient = _provider.GetRequiredService<VoiceMeeterClient>();
@@ -107,6 +111,14 @@ namespace ArctisVoiceMeeter
             var binding = new ArctisVoiceMeeterChannelBinding(poller, voiceMeeterClient, options);
             binding.OptionsChanged += BindingPropertyChanged;
             return binding;
+        }
+
+        private ObservableCollection<ArctisVoiceMeeterChannelBinding> CreateBindingsCollection()
+        {
+            ArctisVoiceMeeterPresets options = _presets.Value;
+            var bindings = options.Select(CreateBinding);
+
+            return new ObservableCollection<ArctisVoiceMeeterChannelBinding>(bindings);
         }
 
         private void ClearBindings()

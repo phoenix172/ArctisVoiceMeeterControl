@@ -9,7 +9,11 @@
     <!--StartupUri="/Views/MainWindow.xaml"-->
     <Application.Resources>
          <ResourceDictionary>
-             <DataTemplate DataType="{x:Type viewModels:ChannelBindingViewModel}">
+             <DataTemplate DataType="{x:Type viewModels:HeadsetViewModel}">
+                 <local:HeadsetView />
+             </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:ChannelBindingViewModel}">
                  <local:ChannelBindingView />
              </DataTemplate>
          </ResourceDictionary>

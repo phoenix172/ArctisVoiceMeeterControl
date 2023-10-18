@@ -10,7 +10,18 @@ public partial class ArctisVoiceMeeterChannelBindingOptions : ObservableObject
     [ObservableProperty] private float _voiceMeeterMinVolume;
     [ObservableProperty] private float _voiceMeeterMaxVolume;
     [ObservableProperty] private uint _boundStrip;
-    
+
+    [JsonConstructor]
+    private ArctisVoiceMeeterChannelBindingOptions()
+    {
+        
+    }
+
+    public ArctisVoiceMeeterChannelBindingOptions(string bindingName)
+    {
+        _bindingName = bindingName;
+    }
+
     public void CopyFrom(ArctisVoiceMeeterChannelBindingOptions options)
     {
         BindingName = options.BindingName;

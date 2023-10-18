@@ -59,12 +59,11 @@ namespace ArctisVoiceMeeter
         {
             var presets = scope.ServiceProvider.GetRequiredService<ChannelBindingService>();
             if (!presets.Bindings.Any())
-                presets.AddBinding(new ArctisVoiceMeeterChannelBindingOptions
+                presets.AddBinding(new ArctisVoiceMeeterChannelBindingOptions("Pesho")
                 {
                     BoundStrip = 7,
                     VoiceMeeterMaxVolume = 0,
-                    VoiceMeeterMinVolume = -12,
-                    BindingName = "Pesho"
+                    VoiceMeeterMinVolume = -12
                 });
         }
 
