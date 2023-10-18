@@ -8,7 +8,7 @@ namespace ArctisVoiceMeeter.ViewModels
 {
     public partial class HeadsetViewModel : ObservableObject
     {
-        [ObservableProperty] private readonly int _index;
+        [ObservableProperty] private int _index;
         [ObservableProperty] private ArctisStatus _status;
         [ObservableProperty] private HeadsetChannelBinding[] _channelBindings;
 

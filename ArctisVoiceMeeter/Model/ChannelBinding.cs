@@ -43,6 +43,7 @@ public partial class ChannelBinding : ObservableObject, IDisposable
         _voiceMeeter = voiceMeeter;
         Options = options;
         BindingName = Options.BindingName;
+        BoundHeadsets = Options.BoundHeadsets.ToArray();
 
         HeadsetPoller.ArctisStatusChanged += OnHeadsetStatusChanged;
         Options.PropertyChanged += OnOptionsPropertyChanged;
@@ -69,8 +70,11 @@ public partial class ChannelBinding : ObservableObject, IDisposable
 
     private void OnHeadsetStatusChanged(object? sender, ArctisStatus[] status)
     {
-        _binding
-        UpdateVoiceMeeterGain(status[HeadsetIndex]);
+        foreach (var boundHeadset in BoundHeadsets)
+        {
+            var boundHeadsetStatus = status[boundHeadset.Index];
+            UpdateVoiceMeeterGain(boundHeadsetStatus, boundHeadset.BoundChannel);
+        }
     }
 
     private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus, ArctisChannel channel)

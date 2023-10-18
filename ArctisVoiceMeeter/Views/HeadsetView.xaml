@@ -35,11 +35,12 @@
                                 </StackPanel>
                             </StackPanel>
 
-                            <ItemsControl ItemsSource="{Binding ChannelBindings}">
+                            <!--<ItemsControl ItemsSource="{Binding ChannelBindings}">
                                 <DataTemplate>
-
+                                    <StackPanel>
+                                        <TextBlock>1</TextBlock></StackPanel>
                                 </DataTemplate>
-                            </ItemsControl>
+                            </ItemsControl>-->
                         </StackPanel>
                     </GroupBox>
                 </DataTemplate>
