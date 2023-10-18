@@ -64,7 +64,6 @@ namespace ArctisVoiceMeeter
                     BoundStrip = 7,
                     VoiceMeeterMaxVolume = 0,
                     VoiceMeeterMinVolume = -12,
-                    VoiceMeeterVolume = 0,
                     BindingName = "Pesho"
                 });
         }

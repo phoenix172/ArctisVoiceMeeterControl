@@ -9,14 +9,20 @@ namespace ArctisVoiceMeeter.Model;
 
 public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDisposable
 {
+    public event EventHandler<ArctisVoiceMeeterChannelBindingOptions> OptionsChanged;
+
     private readonly VoiceMeeterClient _voiceMeeter;
-   
-    public ArctisVoiceMeeterChannelBindingOptions Options { get; }
+
+    [ObservableProperty]
+    private ArctisVoiceMeeterChannelBindingOptions _options;
 
     [NotifyPropertyChangedFor(nameof(BindChatChannel))]
     [NotifyPropertyChangedFor(nameof(BindGameChannel))]
     [ObservableProperty]
     private ArctisChannel _boundChannel;
+
+    [ObservableProperty] 
+    private float _voiceMeeterVolume;
 
     [ObservableProperty]
     private string _bindingName;
@@ -29,6 +35,12 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
         BindingName = Options.BindingName;
 
         HeadsetPoller.ArctisStatusChanged += OnHeadsetStatusChanged;
+        Options.PropertyChanged += OnOptionsPropertyChanged;
+    }
+
+    private void OnOptionsPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        OptionsChanged?.Invoke(this, (ArctisVoiceMeeterChannelBindingOptions)sender);
     }
 
     public HeadsetPoller HeadsetPoller { get; }
@@ -52,8 +64,8 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
 
     private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus)
     {
-        Options.VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus);
-        _voiceMeeter.TrySetGain(Options.BoundStrip, Options.VoiceMeeterVolume);
+        VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus);
+        _voiceMeeter.TrySetGain(Options.BoundStrip, VoiceMeeterVolume);
     }
 
     private float GetScaledChannelVolume(ArctisStatus status)
@@ -65,5 +77,6 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
     public void Dispose()
     {
         HeadsetPoller.ArctisStatusChanged -= OnHeadsetStatusChanged;
+        Options.PropertyChanged -= OnOptionsPropertyChanged;
     }
 }
