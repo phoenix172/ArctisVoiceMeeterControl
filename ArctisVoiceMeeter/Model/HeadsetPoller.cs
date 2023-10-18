@@ -81,7 +81,8 @@ public class HeadsetPoller : IDisposable
 
     private async Task PollOnce()
     {
-        ArctisStatusChanged?.Invoke(this, _arctis.GetStatus());
+        var arctisStatus = _arctis.GetStatus();
+        ArctisStatusChanged?.Invoke(this, arctisStatus);
         await Task.Delay(1000 / (int)ArctisRefreshRate);
     }
 }

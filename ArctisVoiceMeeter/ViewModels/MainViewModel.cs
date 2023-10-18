@@ -16,7 +16,9 @@ public class MainViewModel
     public MainViewModel(HeadsetViewModel headsetViewModel, ChannelBindingService bindingService)
     {
         HeadsetViewModel = headsetViewModel;
-        ChannelBindings = bindingService.Bindings.Select(x => new ChannelBindingViewModel(x.Value, x.Key)).ToList();
+        ChannelBindings = bindingService.Bindings
+            .Select(x => new ChannelBindingViewModel(x))
+            .ToList();
         //arctis ??= new ArctisClient();
         //_poller ??= new HeadsetPoller(arctis);
         //voiceMeeter ??= new VoiceMeeterClient();

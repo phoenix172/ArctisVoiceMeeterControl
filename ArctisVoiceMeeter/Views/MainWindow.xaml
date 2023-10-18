@@ -32,7 +32,7 @@
             <TabControl ItemsSource="{Binding ChannelBindings}" TabStripPlacement="Left" SelectedIndex="0">
                 <TabControl.Resources>
                     <Style TargetType="TabItem">
-                        <Setter Property="Header" Value="{Binding Name}"></Setter>
+                        <Setter Property="Header" Value="{Binding BindingName}"></Setter>
                     </Style>
                 </TabControl.Resources>
             </TabControl>

@@ -46,7 +46,7 @@ namespace ArctisVoiceMeeter
 
             services.AddSingleton<VoiceMeeterClient>();
 
-            services.ConfigureWritableOptions<ArctisVoiceMeeterPresets>((IConfigurationRoot) context.Configuration, "Presets");
+            services.ConfigureWritableOptions<ArctisVoiceMeeterPresets>((IConfigurationRoot)context.Configuration, "Presets");
 
             services.AddTransient<HeadsetViewModel>();
             services.AddSingleton<ChannelBindingService>();
@@ -57,16 +57,16 @@ namespace ArctisVoiceMeeter
 
         private static void InitializePresets(IServiceScope scope)
         {
-            var presets = scope.ServiceProvider.GetService<IWritableOptions<ArctisVoiceMeeterPresets>>();
-
-            if (presets?.Value.Count == 0)
-                presets.Update(x => x.Add("Preset", new ArctisVoiceMeeterChannelBindingOptions
+            var presets = scope.ServiceProvider.GetRequiredService<ChannelBindingService>();
+            if (!presets.Bindings.Any())
+                presets.AddBinding(new ArctisVoiceMeeterChannelBindingOptions
                 {
-                    BoundStrip = 0,
+                    BoundStrip = 7,
                     VoiceMeeterMaxVolume = 0,
-                    VoiceMeeterMinVolume = 0,
-                    VoiceMeeterVolume = 0
-                }));
+                    VoiceMeeterMinVolume = -12,
+                    VoiceMeeterVolume = 0,
+                    BindingName = "Pesho"
+                });
         }
 
         protected override async void OnExit(ExitEventArgs e)

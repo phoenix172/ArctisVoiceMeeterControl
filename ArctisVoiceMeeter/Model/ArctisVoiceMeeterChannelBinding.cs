@@ -18,11 +18,15 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
     [ObservableProperty]
     private ArctisChannel _boundChannel;
 
+    [ObservableProperty]
+    private string _bindingName;
+
     public ArctisVoiceMeeterChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter, ArctisVoiceMeeterChannelBindingOptions options)
     {
         HeadsetPoller = poller;
         _voiceMeeter = voiceMeeter;
         Options = options;
+        BindingName = Options.BindingName;
 
         HeadsetPoller.ArctisStatusChanged += OnHeadsetStatusChanged;
     }
