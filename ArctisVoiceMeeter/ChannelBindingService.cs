@@ -99,7 +99,14 @@ namespace ArctisVoiceMeeter
 
         public void Dispose()
         {
-            ClearBindings();
+
+            foreach (var binding in Bindings)
+            {
+                binding.OptionsChanged -= BindingPropertyChanged;
+                binding.Dispose();
+            }
+
+            Bindings.Clear();
         }
 
         private ArctisVoiceMeeterChannelBinding CreateBinding(ArctisVoiceMeeterChannelBindingOptions options)
@@ -120,20 +127,6 @@ namespace ArctisVoiceMeeter
 
             return new ObservableCollection<ArctisVoiceMeeterChannelBinding>(bindings);
         }
-
-        private void ClearBindings()
-        {
-            if (Bindings == null) return;
-
-            foreach (var binding in Bindings)
-            {
-                binding.OptionsChanged -= BindingPropertyChanged;
-                binding.Dispose();
-            }
-
-            Bindings.Clear();
-        }
-
         private void BindingPropertyChanged(object? sender, ArctisVoiceMeeterChannelBindingOptions options)
         {
             ChangeBinding(options);

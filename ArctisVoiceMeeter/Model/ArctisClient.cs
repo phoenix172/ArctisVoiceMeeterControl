@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ArctisVoiceMeeter.Infrastructure;
@@ -7,10 +8,10 @@ using HidSharp;
 
 namespace ArctisVoiceMeeter.Model;
 
-public record ArctisStatus(uint Battery, uint ChatVolume, uint GameVolume);
-
 public class ArctisClient
 {
+    private record ArctisRawStatus(HidDevice Device, byte[] Data);
+
     private const int VendorSteelSeries = 0x1038;
     private const int IdArctis9 = 0x12c2;
     private const byte BatteryMax = 0x9A;
@@ -23,45 +24,52 @@ public class ArctisClient
     private const uint ChatVolumeByteIndex = 10;
     private const uint GameVolumeByteIndex = 11;
 
-    private HidDevice? _lastSuccessfulDevice;
+    private HidDevice[] _foundDevices = {};
 
-    public ArctisStatus GetStatus()
+    public IEnumerable<ArctisStatus> GetStatus()
     {
         var data = GetRawStatus();
-        var parsed = ParseRawStatus(data);
+        var parsed = data.Select(ParseRawStatus);
         return parsed;
     }
 
-    private ArctisStatus ParseRawStatus(byte[] data)
+    private ArctisStatus ParseRawStatus(ArctisRawStatus rawStatus)
     {
-        var battery = MathHelper.Scale(data[BatteryByteIndex], BatteryMin, BatteryMax);
+        var battery = MathHelper.Scale(rawStatus.Data[BatteryByteIndex], BatteryMin, BatteryMax);
         battery = Math.Min(battery, (byte)100);
-        var chatVolume = MathHelper.Scale(data[ChatVolumeByteIndex], ChannelMinVolume, ChannelMaxVolume);
-        var gameVolume = MathHelper.Scale(data[GameVolumeByteIndex], ChannelMinVolume, ChannelMaxVolume);
+        var chatVolume = MathHelper.Scale(rawStatus.Data[ChatVolumeByteIndex], ChannelMinVolume, ChannelMaxVolume);
+        var gameVolume = MathHelper.Scale(rawStatus.Data[GameVolumeByteIndex], ChannelMinVolume, ChannelMaxVolume);
 
-        return new(battery, chatVolume, gameVolume);
+        var headsetName = rawStatus.Device.GetFriendlyName(); //TODO: Replace with a name that is actually different between same headsets
+
+        return new(battery, chatVolume, gameVolume, headsetName);
     }
 
-    private byte[] GetRawStatus(int vid = VendorSteelSeries, int pid = IdArctis9)
+    private IEnumerable<ArctisRawStatus> GetRawStatus(int vid = VendorSteelSeries, int pid = IdArctis9)
     {
-        IEnumerable<HidDevice>? headsets = DeviceList.Local.GetHidDevices(vid, pid);
-        var status = ReadHeadsetStatus(headsets);
+        var status = ReadHeadsetStatus(_foundDevices).ToList();
+
+        if (status.Count == 0 || status.Count != _foundDevices.Length)
+        {
+            IEnumerable<HidDevice>? headsets = DeviceList.Local.GetHidDevices(vid, pid);
+            status = ReadHeadsetStatus(headsets).ToList();
+        }
+
+        if(!status.Any())
+            throw new InvalidOperationException("SteelSeries Arctis 9 Wireless headset not found.");
+
+        _foundDevices = status.Select(x => x.Device).ToArray();
+
         return status;
     }
 
-    private byte[] ReadHeadsetStatus(IEnumerable<HidDevice> headsets)
+    private IEnumerable<ArctisRawStatus> ReadHeadsetStatus(IEnumerable<HidDevice> headsets)
     {
-        if (_lastSuccessfulDevice != null &&
-            TryReadHeadsetStatus(_lastSuccessfulDevice, out var bytes))
-            return bytes;
-
         foreach (var headset in headsets)
         {
-            if (TryReadHeadsetStatus(headset, out bytes))
-                return bytes;
+            if (TryReadHeadsetStatus(headset, out var bytes))
+                yield return new(headset, bytes);
         }
-
-        throw new InvalidOperationException("SteelSeries Arctis 9 Wireless headset not found.");
     }
 
     private bool TryReadHeadsetStatus(HidDevice headset, out byte[] bytes)
@@ -72,13 +80,13 @@ public class ArctisClient
             var data = ReadHeadsetStatus(headset);
             if (data.Any())
             {
-                _lastSuccessfulDevice = headset;
                 bytes = data;
                 return true;
             }
         }
-        catch
+        catch(Exception ex)
         {
+            Debug.WriteLine(ex);
             //Ignore exception
         }
         return false;

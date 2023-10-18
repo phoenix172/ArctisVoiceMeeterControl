@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,27 +16,14 @@ public class HeadsetPoller : IDisposable
     //private uint _arctisGameVolume;
     //private uint _arctisChatVolume;
 
-    public event EventHandler<ArctisStatus>? ArctisStatusChanged;
+    public event EventHandler<ArctisStatus[]>? ArctisStatusChanged;
 
     public HeadsetPoller(ArctisClient arctis)
     {
         _arctis = arctis;
     }
 
-
     public uint ArctisRefreshRate { get; set; } = 60;
-    //public uint ArctisGameVolume
-    //{
-    //    get => _arctisGameVolume;
-    //    private set => SetField(ref _arctisGameVolume, value);
-    //}
-
-    //public uint ArctisChatVolume
-    //{
-    //    get => _arctisChatVolume;
-    //    private set => SetField(ref _arctisChatVolume, value);
-    //}
-
 
     public void Dispose()
     {
@@ -82,7 +70,7 @@ public class HeadsetPoller : IDisposable
     private async Task PollOnce()
     {
         var arctisStatus = _arctis.GetStatus();
-        ArctisStatusChanged?.Invoke(this, arctisStatus);
+        ArctisStatusChanged?.Invoke(this, arctisStatus.ToArray());
         await Task.Delay(1000 / (int)ArctisRefreshRate);
     }
 }

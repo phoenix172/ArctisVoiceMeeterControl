@@ -1,4 +1,5 @@
-﻿using ArctisVoiceMeeter.Model;
+﻿using System.Linq;
+using ArctisVoiceMeeter.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ArctisVoiceMeeter.ViewModels
@@ -8,7 +9,7 @@ namespace ArctisVoiceMeeter.ViewModels
         public HeadsetPoller Poller { get; }
 
         [ObservableProperty]
-        private ArctisStatus _status;
+        private ArctisStatus[] _status;
 
         public HeadsetViewModel(HeadsetPoller poller)
         {
@@ -16,9 +17,29 @@ namespace ArctisVoiceMeeter.ViewModels
             poller.ArctisStatusChanged += OnHeadsetStatusChanged;
         }
 
-        private void OnHeadsetStatusChanged(object? sender, ArctisStatus status)
+        private void OnHeadsetStatusChanged(object? sender, ArctisStatus[] status)
         {
-            Status = status;
+            SetHeadsetNames(status);
+
+            if (Status?.Length == status.Length)
+            {
+                foreach (var (left, right) in Status.Zip(status))
+                {
+                    left.CopyFrom(right);
+                }
+            }
+            else
+            {
+                Status = status;
+            }
+        }
+
+        private static void SetHeadsetNames(ArctisStatus[] status)
+        {
+            for (var i = 0; i < status.Length; i++)
+            {
+                status[i].HeadsetName = $"Headset {i+1}";
+            }
         }
     }
 }

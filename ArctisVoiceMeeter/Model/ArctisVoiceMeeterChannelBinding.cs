@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Security.Authentication.ExtendedProtection;
 using ArctisVoiceMeeter.Infrastructure;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -57,9 +58,9 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
         set => BoundChannel = value ? ArctisChannel.Game : ArctisChannel.Chat;
     }
 
-    private void OnHeadsetStatusChanged(object? sender, ArctisStatus e)
+    private void OnHeadsetStatusChanged(object? sender, ArctisStatus[] e)
     {
-        UpdateVoiceMeeterGain(e);
+        UpdateVoiceMeeterGain(e.First());
     }
 
     private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus)
