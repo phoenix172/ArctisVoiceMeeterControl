@@ -136,30 +136,37 @@ namespace ArctisVoiceMeeter
                 .ToDictionary(x => (x.Index, x.ChannelBindingName), x=>(x.BoundChannel, x.IsEnabled));
 
             var headsetIndices = Enumerable.Range(0, _headsetPoller.GetStatus().Length);
-            var headsetChannels = Enum.GetValues<ArctisChannel>();
 
             var bindings =
                 from index in headsetIndices
                 from binding in Bindings
-                select CreateHeadsetChannelBinding(index, binding);
+                select CreateHeadsetChannelBinding(index, binding, bindingsLookup);
             return bindings;
+        }
 
-            HeadsetChannelBinding CreateHeadsetChannelBinding(int index, ChannelBinding binding)
+        private HeadsetChannelBinding CreateHeadsetChannelBinding(
+            int index, 
+            ChannelBinding binding, 
+            Dictionary<(int Index, string ChannelBindingName), (ArctisChannel BoundChannel, bool IsEnabled)> bindingsLookup)
+        {
+            bindingsLookup.TryGetValue((index, binding.BindingName), out var channel);
+            HeadsetChannelBinding result = new HeadsetChannelBinding(index, channel.BoundChannel, binding.BindingName)
             {
-                bindingsLookup.TryGetValue((index, binding.BindingName), out var channel);
-                HeadsetChannelBinding result = new HeadsetChannelBinding(index, channel.BoundChannel, binding.BindingName)
-                {
-                    IsEnabled = channel.IsEnabled
-                };
-                result.PropertyChanged += (sender, args) =>
-                {
-                    var source = sender as HeadsetChannelBinding;
-                    var headset = binding.BoundHeadsets.First(x => x.Index == index);
+                IsEnabled = channel.IsEnabled
+            };
+            result.PropertyChanged += OnHeadsetChannelBindingPropertyChanged;
+            return result;
 
-                    headset.IsEnabled = source.IsEnabled;
-                    headset.BoundChannel = source.BoundChannel;
-                };
-                return result;
+
+            void OnHeadsetChannelBindingPropertyChanged(object? sender, PropertyChangedEventArgs args)
+            {
+                if (sender == null) throw new ArgumentNullException(nameof(sender));
+
+                var source = (HeadsetChannelBinding)sender;
+                var headset = binding.BoundHeadsets.First(x => x.Index == index);
+
+                headset.IsEnabled = source.IsEnabled;
+                headset.BoundChannel = source.BoundChannel;
             }
         }
 
