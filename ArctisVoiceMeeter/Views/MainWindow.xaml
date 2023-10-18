@@ -4,18 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArctisVoiceMeeter"
-        xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
-        xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:tb="http://www.hardcodet.net/taskbar" xmlns:viewmodels="clr-namespace:ArctisVoiceMeeter.ViewModels"
         mc:Ignorable="d"
         Title="Arctis VoiceMeeter Control"
         Icon="/Infrastructure/Icon.ico"
-        d:DataContext="{d:DesignInstance local:MainViewModel}" SizeToContent="WidthAndHeight"
-        Closing="MainWindow_OnClosing"
+        d:DataContext="{d:DesignInstance viewmodels:MainViewModel, IsDesignTimeCreatable=false}" SizeToContent="WidthAndHeight"
         StateChanged="MainWindow_OnStateChanged"
-        ResizeMode="CanMinimize">
-    <StackPanel
-        Orientation="Horizontal"
-        d:DataContext="{d:DesignInstance local:MainViewModel}">
+        ResizeMode="CanMinimize"
+        d:DesignWidth="400"
+        d:DesignHeight="200">
+    <StackPanel Orientation="Horizontal">
         <tb:TaskbarIcon
             IconSource="/Infrastructure/Icon.ico"
             ToolTipText="Arctis VoiceMeeter Control"
@@ -29,18 +27,27 @@
 
 
         <GroupBox Header="Arctis Headset" Padding="10" Margin="5">
-            <local:HeadsetView DataContext="{Binding HeadsetViewModel }"></local:HeadsetView>
+
+            <ContentPresenter Content="{Binding HeadsetViewModel}"/>
+            <!--<local:HeadsetView DataContext="{Binding HeadsetViewModel}"></local:HeadsetView>-->
         </GroupBox>
 
         <GroupBox Header="VoiceMeeter Channel Binding" Padding="10" Margin="5">
-            <TabControl ItemsSource="{Binding ChannelBindings}" TabStripPlacement="Left" SelectedIndex="0">
-                <TabControl.Resources>
-                    <Style TargetType="TabItem">
-                        <Setter Property="Header" Value="{Binding Name}"></Setter>
-                    </Style>
-                </TabControl.Resources>
-            </TabControl>
-            <!--<local:ChannelBindingView DataContext="{Binding Binding}"></local:ChannelBindingView>-->
+            <DockPanel>
+
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
+                    <Button Command="{Binding CreateBindingCommand}" Content="Create New" DockPanel.Dock="Top" HorizontalAlignment="Left" MinWidth="100" Margin="0 0 10 5"/>
+                    <Button Command="{Binding RemoveBindingCommand}" CommandParameter="{Binding ChannelBindings.CurrentItem}"  Content="Delete" DockPanel.Dock="Top" MinWidth="100" Margin="0 0 10 5"/>
+                </StackPanel>
+
+                <TabControl ItemsSource="{Binding ChannelBindings}" TabStripPlacement="Left" SelectedIndex="0" IsSynchronizedWithCurrentItem="True">
+                    <TabControl.Resources>
+                        <Style TargetType="TabItem">
+                            <Setter Property="Header" Value="{Binding BindingName}"></Setter>
+                        </Style>
+                    </TabControl.Resources>
+                </TabControl>
+            </DockPanel>
         </GroupBox>
     </StackPanel>
 </Window>

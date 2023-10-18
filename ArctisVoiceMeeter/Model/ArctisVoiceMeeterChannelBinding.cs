@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Security.Authentication.ExtendedProtection;
 using ArctisVoiceMeeter.Infrastructure;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -8,24 +9,38 @@ namespace ArctisVoiceMeeter.Model;
 
 public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDisposable
 {
+    public event EventHandler<ArctisVoiceMeeterChannelBindingOptions> OptionsChanged;
+
     private readonly VoiceMeeterClient _voiceMeeter;
 
-    [ObservableProperty] private float _voiceMeeterMinVolume;
-    [ObservableProperty] private float _voiceMeeterMaxVolume;
-    [ObservableProperty] private uint _boundStrip;
-    [ObservableProperty] private float _voiceMeeterVolume;
+    [ObservableProperty]
+    private ArctisVoiceMeeterChannelBindingOptions _options;
 
     [NotifyPropertyChangedFor(nameof(BindChatChannel))]
     [NotifyPropertyChangedFor(nameof(BindGameChannel))]
     [ObservableProperty]
     private ArctisChannel _boundChannel;
 
-    public ArctisVoiceMeeterChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter)
+    [ObservableProperty] 
+    private float _voiceMeeterVolume;
+
+    [ObservableProperty]
+    private string _bindingName;
+
+    public ArctisVoiceMeeterChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter, ArctisVoiceMeeterChannelBindingOptions options)
     {
         HeadsetPoller = poller;
         _voiceMeeter = voiceMeeter;
+        Options = options;
+        BindingName = Options.BindingName;
 
         HeadsetPoller.ArctisStatusChanged += OnHeadsetStatusChanged;
+        Options.PropertyChanged += OnOptionsPropertyChanged;
+    }
+
+    private void OnOptionsPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        OptionsChanged?.Invoke(this, (ArctisVoiceMeeterChannelBindingOptions)sender);
     }
 
     public HeadsetPoller HeadsetPoller { get; }
@@ -50,17 +65,18 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
     private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus)
     {
         VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus);
-        _voiceMeeter.TrySetGain(BoundStrip, VoiceMeeterVolume);
+        _voiceMeeter.TrySetGain(Options.BoundStrip, VoiceMeeterVolume);
     }
 
     private float GetScaledChannelVolume(ArctisStatus status)
     {
         var volume = status.GetArctisVolume(BoundChannel);
-        return MathHelper.Scale(volume, 0, 100, VoiceMeeterMinVolume, VoiceMeeterMaxVolume);
+        return MathHelper.Scale(volume, 0, 100, Options.VoiceMeeterMinVolume, Options.VoiceMeeterMaxVolume);
     }
 
     public void Dispose()
     {
         HeadsetPoller.ArctisStatusChanged -= OnHeadsetStatusChanged;
+        Options.PropertyChanged -= OnOptionsPropertyChanged;
     }
 }

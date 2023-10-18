@@ -13,7 +13,6 @@ namespace ArctisVoiceMeeter.ViewModels
         public HeadsetViewModel(HeadsetPoller poller)
         {
             Poller = poller;
-
             poller.ArctisStatusChanged += OnHeadsetStatusChanged;
         }
 

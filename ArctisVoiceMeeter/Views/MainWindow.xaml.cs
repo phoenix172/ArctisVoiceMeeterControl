@@ -22,17 +22,10 @@ namespace ArctisVoiceMeeter
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = ViewModel;
-        }
-
-        private MainViewModel ViewModel { get; } = new();
-
-        private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
-        {
-            ViewModel.HandleClose();
+            DataContext = viewModel;
         }
 
         private void TaskBarIcon_OnTrayMouseDoubleClick(object sender, RoutedEventArgs e)

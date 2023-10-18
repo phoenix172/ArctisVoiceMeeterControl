@@ -15,9 +15,12 @@
   </ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Awesome.Net.WritableOptions" Version="3.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
 		<PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
 		<PackageReference Include="HidSharp" Version="2.1.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
 	<ItemGroup>

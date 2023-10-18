@@ -87,6 +87,9 @@ public class ArctisClient
     private static byte[] ReadHeadsetStatus(HidDevice headset)
     {
         var stream = headset.Open();
+        stream.ReadTimeout = 200;
+        stream.WriteTimeout = 200;
+
         stream.Write(new byte[] { 0x0, 0x20 });
         var response = new byte[12];
         stream.Read(response);

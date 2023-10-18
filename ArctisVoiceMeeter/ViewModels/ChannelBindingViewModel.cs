@@ -7,9 +7,10 @@ public partial class ChannelBindingViewModel : ObservableObject
 {
     public ChannelBindingViewModel(ArctisVoiceMeeterChannelBinding channelBinding)
     {
+        BindingName = channelBinding.BindingName;
         ChannelBinding = channelBinding;
     }
-    [ObservableProperty] private string _name = "Preset";
+    [ObservableProperty] private string _bindingName;
 
     public ArctisVoiceMeeterChannelBinding ChannelBinding { get; }
 
