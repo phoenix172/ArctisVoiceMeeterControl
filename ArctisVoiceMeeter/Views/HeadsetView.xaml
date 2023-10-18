@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:ArctisVoiceMeeter.Views"
              xmlns:viewModels="clr-namespace:ArctisVoiceMeeter.ViewModels"
              xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:arctisVoiceMeeter="clr-namespace:ArctisVoiceMeeter"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance viewModels:HeadsetViewModel}">
@@ -28,10 +30,41 @@
 
             <ItemsControl ItemsSource="{Binding ChannelBindings}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type model:HeadsetChannelBinding}">
+                    <DataTemplate DataType="{x:Type arctisVoiceMeeter:HeadsetChannelBindingViewModel}">
                         <StackPanel>
-                            <ToggleButton IsChecked="{Binding Path=., Converter={model:HeadsetChannelBindingToNullableBooleanConverter}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                                gosho
+                            <ToggleButton IsChecked="{Binding Path=ThreeState,Mode=TwoWay}" IsThreeState="True">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsChecked" Value="{x:Null}">
+                                                <Setter Property="Content" Value="Disabled"/>
+                                                <!--<Setter Property="IsChecked" Value="{x:Null}"/>-->
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter Property="Content" Value="Chat"/>
+                                                <!--<Setter Property="IsChecked" Value="{x:Null}"/>-->
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="False">
+                                                <Setter Property="Content" Value="Game"/>
+                                                <!--<Setter Property="IsChecked" Value="{x:Null}"/>-->
+                                            </Trigger>
+                                            <!--<DataTrigger Binding="{Binding IsEnabled}" Value="false">
+                                                <Setter Property="Content" Value="Disabled"/>
+                                                <Setter Property="IsChecked" Value="{x:Null}"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding BoundChannel}" Value="{x:Static model:ArctisChannel.Game}">
+                                                <Setter Property="Content" Value="Game"/>
+                                                <Setter Property="IsChecked" Value="True"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding BoundChannel}" Value="{x:Static model:ArctisChannel.Chat}">
+                                                <Setter Property="Content" Value="Chat"/>
+                                                <Setter Property="IsChecked" Value="False"/>
+                                            </DataTrigger>-->
+                                        </Style.Triggers>
+                                        <Setter Property="Content" Value="Disabled"/>
+                                        <Setter Property="IsChecked" Value="{x:Null}"/>
+                                    </Style>
+                                </ToggleButton.Style>
                             </ToggleButton>
                         </StackPanel>
                     </DataTemplate>

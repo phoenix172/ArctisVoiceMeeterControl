@@ -10,7 +10,7 @@ namespace ArctisVoiceMeeter.ViewModels
     {
         [ObservableProperty] private int _index;
         [ObservableProperty] private ArctisStatus _status;
-        [ObservableProperty] private HeadsetChannelBinding[] _channelBindings;
+        [ObservableProperty] private HeadsetChannelBindingViewModel[] _channelBindings;
 
         private readonly ChannelBindingService _bindingService;
 
@@ -27,7 +27,7 @@ namespace ArctisVoiceMeeter.ViewModels
 
         private void LoadChannelBindings()
         {
-            ChannelBindings = _bindingService.GetHeadsetBindings(Index).ToArray();
+            ChannelBindings = _bindingService.GetHeadsetBindings(Index).Select(x=>new HeadsetChannelBindingViewModel(x)).ToArray();
         }
 
         public string HeadsetName => $"Headset {Index + 1}";

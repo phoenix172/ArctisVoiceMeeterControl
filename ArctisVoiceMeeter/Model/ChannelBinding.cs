@@ -70,7 +70,7 @@ public partial class ChannelBinding : ObservableObject, IDisposable
 
     private void OnHeadsetStatusChanged(object? sender, ArctisStatus[] status)
     {
-        foreach (var boundHeadset in BoundHeadsets)
+        foreach (var boundHeadset in BoundHeadsets.Where(x=>x.IsEnabled))
         {
             var boundHeadsetStatus = status[boundHeadset.Index];
             UpdateVoiceMeeterGain(boundHeadsetStatus, boundHeadset.BoundChannel);

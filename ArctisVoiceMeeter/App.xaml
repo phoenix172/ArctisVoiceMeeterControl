@@ -19,8 +19,8 @@
              </DataTemplate>
 
              <DataTemplate DataType="{x:Type viewModels:HeadsetViewModel}">
-                 <views:HeadsetView></views:HeadsetView>
-             </DataTemplate>
+                <views:HeadsetView/>
+            </DataTemplate>
          </ResourceDictionary>
     </Application.Resources>
 </Application>

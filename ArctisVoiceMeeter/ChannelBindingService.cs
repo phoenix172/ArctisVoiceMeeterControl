@@ -135,8 +135,8 @@ namespace ArctisVoiceMeeter
         private IEnumerable<HeadsetChannelBinding> CalculateHeadsetBindings()
         {
             var bindingsLookup = Bindings
-                .SelectMany(x => x.BoundHeadsets.Select(y => (y.Index, x.BoundChannel, x.BindingName)))
-                .ToDictionary(x => (x.Index, x.BoundChannel, x.BindingName), x => x);
+                .SelectMany(x => x.BoundHeadsets.Select(y => (y.Index, x.BoundChannel, x.BindingName, Binding:x)))
+                .ToDictionary(x => (x.Index, x.BoundChannel, x.BindingName), x=>x.Binding);
             var headsetIndices = Enumerable.Range(0, _headsetPoller.GetStatus().Length);
             var headsetChannels = Enum.GetValues<ArctisChannel>();
 
@@ -144,11 +144,23 @@ namespace ArctisVoiceMeeter
                 from index in headsetIndices
                 from channel in headsetChannels
                 from binding in Bindings
-                select new HeadsetChannelBinding(index, channel)
+                select CreateHeadsetChannelBinding(index, channel, binding);
+            return bindings;
+
+            HeadsetChannelBinding CreateHeadsetChannelBinding(int index, ArctisChannel channel, ChannelBinding binding)
+            {
+                HeadsetChannelBinding result = new HeadsetChannelBinding(index, channel)
                 {
                     IsEnabled = bindingsLookup.TryGetValue((index, channel, binding.BindingName), out _)
                 };
-            return bindings;
+                result.PropertyChanged += (sender, args) =>
+                {
+                    var source = sender as HeadsetChannelBinding;
+                    binding.BoundChannel = source.BoundChannel;
+
+                };
+                return result;
+            }
         }
 
         public void Dispose()
