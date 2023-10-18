@@ -8,19 +8,26 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ArctisVoiceMeeter.Model;
 
-public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDisposable
+public partial class ChannelBinding : ObservableObject, IDisposable
 {
-    public event EventHandler<ArctisVoiceMeeterChannelBindingOptions> OptionsChanged;
+    public event EventHandler<ChannelBindingOptions> OptionsChanged;
 
     private readonly VoiceMeeterClient _voiceMeeter;
 
     [ObservableProperty]
-    private ArctisVoiceMeeterChannelBindingOptions _options;
+    private ChannelBindingOptions _options;
 
     [NotifyPropertyChangedFor(nameof(BindChatChannel))]
     [NotifyPropertyChangedFor(nameof(BindGameChannel))]
+
+
     [ObservableProperty]
     private ArctisChannel _boundChannel;
+
+    [ObservableProperty] private int _headsetIndex = 0;
+
+
+    [ObservableProperty] private HeadsetChannelBinding[] _boundHeadsets;
 
     [ObservableProperty] 
     private float _voiceMeeterVolume;
@@ -28,7 +35,9 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
     [ObservableProperty]
     private string _bindingName;
 
-    public ArctisVoiceMeeterChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter, ArctisVoiceMeeterChannelBindingOptions options)
+
+
+    public ChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter, ChannelBindingOptions options)
     {
         HeadsetPoller = poller;
         _voiceMeeter = voiceMeeter;
@@ -41,7 +50,7 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
 
     private void OnOptionsPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        OptionsChanged?.Invoke(this, (ArctisVoiceMeeterChannelBindingOptions)sender);
+        OptionsChanged?.Invoke(this, (ChannelBindingOptions)sender);
     }
 
     public HeadsetPoller HeadsetPoller { get; }
@@ -58,20 +67,21 @@ public partial class ArctisVoiceMeeterChannelBinding : ObservableObject, IDispos
         set => BoundChannel = value ? ArctisChannel.Game : ArctisChannel.Chat;
     }
 
-    private void OnHeadsetStatusChanged(object? sender, ArctisStatus[] e)
+    private void OnHeadsetStatusChanged(object? sender, ArctisStatus[] status)
     {
-        UpdateVoiceMeeterGain(e.First());
+        _binding
+        UpdateVoiceMeeterGain(status[HeadsetIndex]);
     }
 
-    private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus)
+    private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus, ArctisChannel channel)
     {
-        VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus);
+        VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus, channel);
         _voiceMeeter.TrySetGain(Options.BoundStrip, VoiceMeeterVolume);
     }
 
-    private float GetScaledChannelVolume(ArctisStatus status)
+    private float GetScaledChannelVolume(ArctisStatus status, ArctisChannel channel)
     {
-        var volume = status.GetArctisVolume(BoundChannel);
+        var volume = status.GetArctisVolume(channel);
         return MathHelper.Scale(volume, 0, 100, Options.VoiceMeeterMinVolume, Options.VoiceMeeterMaxVolume);
     }
 

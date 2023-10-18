@@ -9,7 +9,7 @@
     <!--StartupUri="/Views/MainWindow.xaml"-->
     <Application.Resources>
          <ResourceDictionary>
-             <DataTemplate DataType="{x:Type viewModels:HeadsetViewModel}">
+             <DataTemplate DataType="{x:Type viewModels:HeadsetStatusListViewModel}">
                  <local:HeadsetView />
              </DataTemplate>
 

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Security.Authentication.ExtendedProtection;
@@ -14,11 +15,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Xml.Linq;
+using ChannelBinding = ArctisVoiceMeeter.Model.ChannelBinding;
 
 namespace ArctisVoiceMeeter
 {
     public class ChannelBindingService : IDisposable
     {
+        public event NotifyCollectionChangedEventHandler BindingsChanged
+        {
+            add => Bindings.CollectionChanged += value;
+            remove => Bindings.CollectionChanged -= value;
+        }
+
         private readonly IServiceProvider _provider;
         private readonly IWritableOptions<ArctisVoiceMeeterPresets> _presets;
 
@@ -27,11 +35,22 @@ namespace ArctisVoiceMeeter
             _provider = provider;
             _presets = presets;
             Bindings = CreateBindingsCollection();
+            BindingsChanged += (_, _) => UpdateChannelBindings();
+
+            UpdateChannelBindings();
         }
 
-        public ObservableCollection<ArctisVoiceMeeterChannelBinding> Bindings { get; }
+        private void UpdateChannelBindings()
+        {
+            foreach (var channelBinding in Bindings)
+            {
+                channelBinding.BoundHeadsets = GetHeadsetBindings(channelBinding.HeadsetIndex).ToArray();
+            }
+        }
 
-        public void SetBinding(ArctisVoiceMeeterChannelBindingOptions options)
+        public ObservableCollection<ChannelBinding> Bindings { get; }
+
+        public void SetBinding(ChannelBindingOptions options)
         {
             if(BindingExists(options.BindingName))
                 ChangeBinding(options);
@@ -39,16 +58,16 @@ namespace ArctisVoiceMeeter
                 AddBinding(options);
         }
 
-        public ArctisVoiceMeeterChannelBinding AddNewBinding()
+        public ChannelBinding AddNewBinding()
         {
             string bindingName = "Preset " + (Bindings.Count + 1);
             while (BindingExists(bindingName))
                 bindingName += "_";
 
-            return AddBinding(new ArctisVoiceMeeterChannelBindingOptions(bindingName));
+            return AddBinding(new ChannelBindingOptions(bindingName));
         }
 
-        public ArctisVoiceMeeterChannelBinding AddBinding(ArctisVoiceMeeterChannelBindingOptions options)
+        public ChannelBinding AddBinding(ChannelBindingOptions options)
         {
             if (_presets.Value.Any(x => x.BindingName == options.BindingName))
                 throw new ArgumentException("A Channel Binding with this name already exists.", nameof(options.BindingName));
@@ -60,7 +79,7 @@ namespace ArctisVoiceMeeter
             return binding;
         }
 
-        public void ChangeBinding(ArctisVoiceMeeterChannelBindingOptions binding)
+        public void ChangeBinding(ChannelBindingOptions binding)
         {
             _presets.Update(presets =>
             {
@@ -72,7 +91,7 @@ namespace ArctisVoiceMeeter
             });
         }
 
-        public ArctisVoiceMeeterChannelBinding? GetBinding(string name) => Bindings.FirstOrDefault(x=>x.BindingName == name);
+        public ChannelBinding? GetBinding(string name) => Bindings.FirstOrDefault(x=>x.BindingName == name);
 
         public bool BindingExists(string name) => GetBinding(name) != null;
 
@@ -97,9 +116,20 @@ namespace ArctisVoiceMeeter
             return true;
         }
 
+        public IEnumerable<HeadsetChannelBinding> GetHeadsetBindings(int? headsetIndex = null)
+        {
+            var bindings = Bindings
+                    .SelectMany(x => x.BoundHeadsets)
+                    .Select(x => new HeadsetChannelBinding(x.Index, x.BoundChannel));
+
+            if (headsetIndex != null)
+                bindings = bindings.Where(x => x.Index == headsetIndex);
+
+            return bindings;
+        }
+
         public void Dispose()
         {
-
             foreach (var binding in Bindings)
             {
                 binding.OptionsChanged -= BindingPropertyChanged;
@@ -109,25 +139,25 @@ namespace ArctisVoiceMeeter
             Bindings.Clear();
         }
 
-        private ArctisVoiceMeeterChannelBinding CreateBinding(ArctisVoiceMeeterChannelBindingOptions options)
+        private ChannelBinding CreateBinding(ChannelBindingOptions options)
         {
             var voiceMeeterClient = _provider.GetRequiredService<VoiceMeeterClient>();
             var poller = _provider.GetRequiredService<HeadsetPoller>();
             poller.Bind();
             
-            var binding = new ArctisVoiceMeeterChannelBinding(poller, voiceMeeterClient, options);
+            var binding = new ChannelBinding(poller, voiceMeeterClient, options);
             binding.OptionsChanged += BindingPropertyChanged;
             return binding;
         }
 
-        private ObservableCollection<ArctisVoiceMeeterChannelBinding> CreateBindingsCollection()
+        private ObservableCollection<ChannelBinding> CreateBindingsCollection()
         {
             ArctisVoiceMeeterPresets options = _presets.Value;
             var bindings = options.Select(CreateBinding);
 
-            return new ObservableCollection<ArctisVoiceMeeterChannelBinding>(bindings);
+            return new ObservableCollection<ChannelBinding>(bindings);
         }
-        private void BindingPropertyChanged(object? sender, ArctisVoiceMeeterChannelBindingOptions options)
+        private void BindingPropertyChanged(object? sender, ChannelBindingOptions options)
         {
             ChangeBinding(options);
         }

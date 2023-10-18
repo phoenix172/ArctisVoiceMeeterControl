@@ -7,10 +7,10 @@
              xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
              xmlns:viewModels="clr-namespace:ArctisVoiceMeeter.ViewModels"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance viewModels:HeadsetViewModel}"
+             d:DataContext="{d:DesignInstance viewModels:HeadsetStatusListViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
-        <ItemsControl ItemsSource="{Binding Status}">
+        <ItemsControl ItemsSource="{Binding Headsets}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"/>
@@ -20,18 +20,26 @@
                 <DataTemplate>
                     <GroupBox Header="{Binding HeadsetName}" BorderThickness="2" BorderBrush="Black">
                         <StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="3">
-                                <Label>Chat Volume:</Label>
-                                <Label Content="{Binding ChatVolume}" />
+                            <StackPanel  DataContext="{Binding Status}" >
+                                <StackPanel Orientation="Horizontal" Margin="3">
+                                    <Label>Chat Volume:</Label>
+                                    <Label Content="{Binding ChatVolume}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="3">
+                                    <Label>Game Volume:</Label>
+                                    <Label Content="{Binding GameVolume}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="3">
+                                    <Label>Battery:</Label>
+                                    <Label Content="{Binding Battery}" />
+                                </StackPanel>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="3">
-                                <Label>Game Volume:</Label>
-                                <Label Content="{Binding GameVolume}" />
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="3">
-                                <Label>Battery:</Label>
-                                <Label Content="{Binding Battery}" />
-                            </StackPanel>
+
+                            <ItemsControl ItemsSource="{Binding ChannelBindings}">
+                                <DataTemplate>
+
+                                </DataTemplate>
+                            </ItemsControl>
                         </StackPanel>
                     </GroupBox>
                 </DataTemplate>

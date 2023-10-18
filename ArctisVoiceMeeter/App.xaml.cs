@@ -48,7 +48,7 @@ namespace ArctisVoiceMeeter
 
             services.ConfigureWritableOptions<ArctisVoiceMeeterPresets>((IConfigurationRoot)context.Configuration, "Presets");
 
-            services.AddTransient<HeadsetViewModel>();
+            services.AddTransient<HeadsetStatusListViewModel>();
             services.AddSingleton<ChannelBindingService>();
 
             services.AddSingleton<MainViewModel>();
@@ -59,7 +59,7 @@ namespace ArctisVoiceMeeter
         {
             var presets = scope.ServiceProvider.GetRequiredService<ChannelBindingService>();
             if (!presets.Bindings.Any())
-                presets.AddBinding(new ArctisVoiceMeeterChannelBindingOptions("Pesho")
+                presets.AddBinding(new ChannelBindingOptions("Pesho")
                 {
                     BoundStrip = 7,
                     VoiceMeeterMaxVolume = 0,

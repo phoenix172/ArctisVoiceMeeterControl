@@ -28,7 +28,7 @@
 
         <GroupBox Header="Arctis Headset" Padding="10" Margin="5">
 
-            <ContentPresenter Content="{Binding HeadsetViewModel}"/>
+            <ContentPresenter Content="{Binding HeadsetStatusListViewModel}"/>
             <!--<local:HeadsetView DataContext="{Binding HeadsetViewModel}"></local:HeadsetView>-->
         </GroupBox>
 

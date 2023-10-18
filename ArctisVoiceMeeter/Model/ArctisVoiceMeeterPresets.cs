@@ -2,7 +2,7 @@
 
 namespace ArctisVoiceMeeter.Model;
 
-public class ArctisVoiceMeeterPresets : List<ArctisVoiceMeeterChannelBindingOptions>
+public class ArctisVoiceMeeterPresets : List<ChannelBindingOptions>
 {
     
 }

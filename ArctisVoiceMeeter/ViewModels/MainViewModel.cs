@@ -23,15 +23,15 @@ public partial class MainViewModel : ObservableObject
     private ObservableCollection<ChannelBindingViewModel> _channelBindingsSource;
 
 
-    public MainViewModel(HeadsetViewModel headsetViewModel, ChannelBindingService bindingService)
+    public MainViewModel(HeadsetStatusListViewModel headsetStatusListViewModel, ChannelBindingService bindingService)
     {
         _bindingService = bindingService;
-        HeadsetViewModel = headsetViewModel;
+        HeadsetStatusListViewModel = headsetStatusListViewModel;
         ChannelBindings = CreateChannelBindingsCollectionView();
     }
 
     public ICollectionView ChannelBindings { get; }
-    public HeadsetViewModel HeadsetViewModel { get; }
+    public HeadsetStatusListViewModel HeadsetStatusListViewModel { get; }
 
     [RelayCommand]
     public void CreateBinding()
