@@ -17,17 +17,7 @@ public partial class ChannelBinding : ObservableObject, IDisposable
     [ObservableProperty]
     private ChannelBindingOptions _options;
 
-    //[NotifyPropertyChangedFor(nameof(BindChatChannel))]
-    //[NotifyPropertyChangedFor(nameof(BindGameChannel))]
-
-
-    //[ObservableProperty]
-    //private ArctisChannel _boundChannel;
-
-    [ObservableProperty] private int _headsetIndex = 0;
-
-
-    [ObservableProperty] private HeadsetChannelBinding[] _boundHeadsets;
+    private HeadsetChannelBinding[] _boundHeadsets;
 
     [ObservableProperty] 
     private float _voiceMeeterVolume;
@@ -56,17 +46,15 @@ public partial class ChannelBinding : ObservableObject, IDisposable
 
     public HeadsetPoller HeadsetPoller { get; }
 
-    //public bool BindChatChannel
-    //{
-    //    get => BoundChannel == ArctisChannel.Chat;
-    //    set => BoundChannel = value ? ArctisChannel.Chat : ArctisChannel.Game;
-    //}
-
-    //public bool BindGameChannel
-    //{
-    //    get => BoundChannel == ArctisChannel.Game;
-    //    set => BoundChannel = value ? ArctisChannel.Game : ArctisChannel.Chat;
-    //}
+    public HeadsetChannelBinding[] BoundHeadsets
+    {
+        get => _boundHeadsets;
+        set
+        {
+            SetProperty(ref _boundHeadsets, value);
+            Options.BoundHeadsets = value.ToList();
+        }
+    }
 
     private void OnHeadsetStatusChanged(object? sender, ArctisStatus[] status)
     {

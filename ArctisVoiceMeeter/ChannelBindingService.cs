@@ -53,7 +53,7 @@ namespace ArctisVoiceMeeter
             var headsetBindings = CalculateHeadsetBindings().ToArray();
             HeadsetBindings = new ObservableCollection<HeadsetChannelBinding>(headsetBindings);
 
-            var headsetsByChannelName = headsetBindings.ToLookup(x => x.ChannelBinding.BindingName);
+            var headsetsByChannelName = headsetBindings.ToLookup(x => x.ChannelBindingName);
 
             foreach (var channelBinding in Bindings)
             {
@@ -63,15 +63,7 @@ namespace ArctisVoiceMeeter
 
         public ObservableCollection<ChannelBinding> Bindings { get; }
         public ObservableCollection<HeadsetChannelBinding> HeadsetBindings { get; private set; }
-
-        public void SetBinding(ChannelBindingOptions options)
-        {
-            if (BindingExists(options.BindingName))
-                ChangeBinding(options);
-            else
-                AddBinding(options);
-        }
-
+        
         public ChannelBinding AddNewBinding()
         {
             string bindingName = "Preset " + (Bindings.Count + 1);
@@ -141,7 +133,7 @@ namespace ArctisVoiceMeeter
         {
             var bindingsLookup = Bindings
                 .SelectMany(x => x.BoundHeadsets)
-                .ToDictionary(x => (x.Index, x.ChannelBinding.BindingName), x=>x.BoundChannel);
+                .ToDictionary(x => (x.Index, x.ChannelBindingName), x=>(x.BoundChannel, x.IsEnabled));
 
             var headsetIndices = Enumerable.Range(0, _headsetPoller.GetStatus().Length);
             var headsetChannels = Enum.GetValues<ArctisChannel>();
@@ -154,10 +146,10 @@ namespace ArctisVoiceMeeter
 
             HeadsetChannelBinding CreateHeadsetChannelBinding(int index, ChannelBinding binding)
             {
-                bool isEnabled = bindingsLookup.TryGetValue((index, binding.BindingName), out ArctisChannel channel);
-                HeadsetChannelBinding result = new HeadsetChannelBinding(index, channel, binding)
+                bindingsLookup.TryGetValue((index, binding.BindingName), out var channel);
+                HeadsetChannelBinding result = new HeadsetChannelBinding(index, channel.BoundChannel, binding.BindingName)
                 {
-                    IsEnabled = isEnabled
+                    IsEnabled = channel.IsEnabled
                 };
                 result.PropertyChanged += (sender, args) =>
                 {
@@ -166,7 +158,6 @@ namespace ArctisVoiceMeeter
 
                     headset.IsEnabled = source.IsEnabled;
                     headset.BoundChannel = source.BoundChannel;
-
                 };
                 return result;
             }

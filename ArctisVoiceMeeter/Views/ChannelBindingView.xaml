@@ -37,19 +37,5 @@
                    MinWidth="50" />
             </StackPanel>
         </StackPanel>
-        <StackPanel DataContext="{Binding ChannelBinding}">
-            <StackPanel Orientation="Horizontal" Margin="3" HorizontalAlignment="Right">
-                <Label>Bind To Arctis Channel:</Label>
-
-
-                <RadioButton Content="Chat" VerticalAlignment="Stretch"
-                         VerticalContentAlignment="Center" Margin="5 0 10 0"
-                         GroupName="ArctisChannel" IsChecked="{Binding BindChatChannel}" />
-                <RadioButton Content="Game" VerticalAlignment="Stretch"
-                         VerticalContentAlignment="Center" Margin="5 0 10 0"
-                         GroupName="ArctisChannel" IsChecked="{Binding BindGameChannel}" />
-
-            </StackPanel>
-        </StackPanel>
     </StackPanel>
 </UserControl>
