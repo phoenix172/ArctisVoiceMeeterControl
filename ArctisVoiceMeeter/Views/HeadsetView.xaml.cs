@@ -21,12 +21,9 @@ namespace ArctisVoiceMeeter
     /// </summary>
     public partial class HeadsetView : UserControl
     {
-        public HeadsetView() { }
-
-        public HeadsetView(HeadsetViewModel viewModel)
+        public HeadsetView()
         {
             InitializeComponent();
-            DataContext = viewModel;
         }
     }
 }
