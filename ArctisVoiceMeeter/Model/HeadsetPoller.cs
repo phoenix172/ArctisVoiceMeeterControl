@@ -25,6 +25,11 @@ public class HeadsetPoller : IDisposable
 
     public uint ArctisRefreshRate { get; set; } = 60;
 
+    public ArctisStatus[] GetStatus()
+    {
+        return _arctis.GetStatus().ToArray();
+    }
+
     public void Dispose()
     {
         Unbind();
@@ -69,8 +74,8 @@ public class HeadsetPoller : IDisposable
 
     private async Task PollOnce()
     {
-        var arctisStatus = _arctis.GetStatus();
-        ArctisStatusChanged?.Invoke(this, arctisStatus.ToArray());
+        var status = GetStatus();
+        ArctisStatusChanged?.Invoke(this, status);
         await Task.Delay(1000 / (int)ArctisRefreshRate);
     }
 }

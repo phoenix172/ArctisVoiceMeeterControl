@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArctisVoiceMeeter.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,14 +14,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ArctisVoiceMeeter.Views
+namespace ArctisVoiceMeeter
 {
     /// <summary>
-    /// Interaction logic for HeadsetView.xaml
+    /// Interaction logic for HeadsetListView.xaml
     /// </summary>
-    public partial class HeadsetView : UserControl
+    public partial class HeadsetListView : UserControl
     {
-        public HeadsetView()
+        public HeadsetListView()
         {
             InitializeComponent();
         }
