@@ -32,7 +32,8 @@ namespace ArctisVoiceMeeter
         private readonly HeadsetPoller _headsetPoller;
         private readonly VoiceMeeterClient _voiceMeeterClient;
 
-        public ChannelBindingService(HeadsetPoller headsetPoller, VoiceMeeterClient voiceMeeterClient, IWritableOptions<ArctisVoiceMeeterPresets> presets)
+        public ChannelBindingService(HeadsetPoller headsetPoller, VoiceMeeterClient voiceMeeterClient,
+            IWritableOptions<ArctisVoiceMeeterPresets> presets)
         {
             _presets = presets;
             _headsetPoller = headsetPoller;
@@ -49,10 +50,14 @@ namespace ArctisVoiceMeeter
 
         private void UpdateChannelBindings()
         {
-            HeadsetBindings = new ObservableCollection<HeadsetChannelBinding>(CalculateHeadsetBindings());
+            var headsetBindings = CalculateHeadsetBindings().ToArray();
+            HeadsetBindings = new ObservableCollection<HeadsetChannelBinding>(headsetBindings);
+
+            var headsetsByChannelName = headsetBindings.ToLookup(x => x.ChannelBinding.BindingName);
+
             foreach (var channelBinding in Bindings)
             {
-                channelBinding.BoundHeadsets = GetHeadsetBindings(channelBinding.HeadsetIndex).ToArray();
+                channelBinding.BoundHeadsets = headsetsByChannelName[channelBinding.BindingName].ToArray();
             }
         }
 
@@ -135,28 +140,32 @@ namespace ArctisVoiceMeeter
         private IEnumerable<HeadsetChannelBinding> CalculateHeadsetBindings()
         {
             var bindingsLookup = Bindings
-                .SelectMany(x => x.BoundHeadsets.Select(y => (y.Index, x.BoundChannel, x.BindingName, Binding:x)))
-                .ToDictionary(x => (x.Index, x.BoundChannel, x.BindingName), x=>x.Binding);
+                .SelectMany(x => x.BoundHeadsets)
+                .ToDictionary(x => (x.Index, x.ChannelBinding.BindingName), x=>x.BoundChannel);
+
             var headsetIndices = Enumerable.Range(0, _headsetPoller.GetStatus().Length);
             var headsetChannels = Enum.GetValues<ArctisChannel>();
 
             var bindings =
                 from index in headsetIndices
-                from channel in headsetChannels
                 from binding in Bindings
-                select CreateHeadsetChannelBinding(index, channel, binding);
+                select CreateHeadsetChannelBinding(index, binding);
             return bindings;
 
-            HeadsetChannelBinding CreateHeadsetChannelBinding(int index, ArctisChannel channel, ChannelBinding binding)
+            HeadsetChannelBinding CreateHeadsetChannelBinding(int index, ChannelBinding binding)
             {
-                HeadsetChannelBinding result = new HeadsetChannelBinding(index, channel)
+                bool isEnabled = bindingsLookup.TryGetValue((index, binding.BindingName), out ArctisChannel channel);
+                HeadsetChannelBinding result = new HeadsetChannelBinding(index, channel, binding)
                 {
-                    IsEnabled = bindingsLookup.TryGetValue((index, channel, binding.BindingName), out _)
+                    IsEnabled = isEnabled
                 };
                 result.PropertyChanged += (sender, args) =>
                 {
                     var source = sender as HeadsetChannelBinding;
-                    binding.BoundChannel = source.BoundChannel;
+                    var headset = binding.BoundHeadsets.First(x => x.Index == index);
+
+                    headset.IsEnabled = source.IsEnabled;
+                    headset.BoundChannel = source.BoundChannel;
 
                 };
                 return result;

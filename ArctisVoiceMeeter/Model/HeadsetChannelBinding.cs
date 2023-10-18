@@ -63,14 +63,16 @@ namespace ArctisVoiceMeeter.Model;
 
 public partial class HeadsetChannelBinding : ObservableObject
 {
-    //private bool _isEnabled;
-    
-    public HeadsetChannelBinding(int index, ArctisChannel boundChannel, bool isEnabled = true)
+    public HeadsetChannelBinding(int index, ArctisChannel boundChannel, ChannelBinding channelBinding,
+        bool isEnabled = true)
     {
+        ChannelBinding = channelBinding;
         Index = index;
         BoundChannel = boundChannel;
         IsEnabled = isEnabled;
     }
+
+    public ChannelBinding ChannelBinding { get; }
 
     [ObservableProperty] private int _index;
     [ObservableProperty] private ArctisChannel _boundChannel;

@@ -27,7 +27,8 @@ namespace ArctisVoiceMeeter.ViewModels
 
         private void LoadChannelBindings()
         {
-            ChannelBindings = _bindingService.GetHeadsetBindings(Index).Select(x=>new HeadsetChannelBindingViewModel(x)).ToArray();
+            ChannelBindings = _bindingService.GetHeadsetBindings(Index)
+                .Select(x=>new HeadsetChannelBindingViewModel(x)).ToArray();
         }
 
         public string HeadsetName => $"Headset {Index + 1}";
