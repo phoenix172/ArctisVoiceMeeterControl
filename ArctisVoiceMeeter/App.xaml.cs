@@ -28,17 +28,9 @@ namespace ArctisVoiceMeeter
         public App()
         {
             _host = Host.CreateDefaultBuilder()
-                .ConfigureAppConfiguration(Configure)
                 .ConfigureServices(ConfigureServices)
                 .Build();
         }
-
-        private void Configure(IConfigurationBuilder x)
-        {
-            x.AddJsonFile("settings.json", optional: true)
-                .Build();
-        }
-
 
         private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
@@ -57,18 +49,6 @@ namespace ArctisVoiceMeeter
             services.AddSingleton<MainWindow>();
         }
 
-        private static void InitializePresets(IServiceScope scope)
-        {
-            var presets = scope.ServiceProvider.GetRequiredService<ChannelBindingService>();
-            if (!presets.Bindings.Any())
-                presets.AddBinding(new ChannelBindingOptions("Pesho")
-                {
-                    BoundStrip = 7,
-                    VoiceMeeterMaxVolume = 0,
-                    VoiceMeeterMinVolume = -12
-                });
-        }
-
         protected override async void OnExit(ExitEventArgs e)
         {
             await _host.StopAsync();
@@ -78,13 +58,9 @@ namespace ArctisVoiceMeeter
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             using var scope = _host.Services.CreateScope();
-
-            InitializePresets(scope);
-
+            
             var mainWindow = scope.ServiceProvider.GetService<MainWindow>();
-
-            var presets = scope.ServiceProvider.GetRequiredService<IOptions<ArctisVoiceMeeterPresets>>();
-
+            
             mainWindow.Show();
         }
     }
