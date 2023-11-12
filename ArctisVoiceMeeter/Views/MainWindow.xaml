@@ -16,7 +16,15 @@
         ResizeMode="CanMinimize"
         d:DesignWidth="400"
         d:DesignHeight="200">
-    <StackPanel Orientation="Horizontal">
+    <DockPanel>
+        <Border DockPanel.Dock="Bottom" Background="#EDEDED" Padding="5 3">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Left">Version 2.0 by @Phoenix172</TextBlock>
+                <CheckBox DockPanel.Dock="Right" IsChecked="{Binding RunOnStartup}"
+                          HorizontalAlignment="Right">Run On Startup</CheckBox>
+            </DockPanel>
+        </Border>
+        <StackPanel Orientation="Horizontal">
 
         <tb:TaskbarIcon
             IconSource="/Infrastructure/Icon.ico"
@@ -34,4 +42,5 @@
         <ContentPresenter Content="{Binding ChannelBindings}"/>
 
     </StackPanel>
+    </DockPanel>
 </Window>

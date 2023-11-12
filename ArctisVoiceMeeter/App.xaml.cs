@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using ArctisVoiceMeeter.Infrastructure;
@@ -15,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using NetworkCopy.Utilities;
 
 namespace ArctisVoiceMeeter
 {
@@ -24,6 +27,8 @@ namespace ArctisVoiceMeeter
     public partial class App : Application
     {
         private readonly IHost _host;
+        private Mutex _singleInstanceMutex;
+        private const string SingleInstanceMutexValue = "ArctisVoiceMeeterSingleInstanceMutex";
 
         public App()
         {
@@ -34,6 +39,8 @@ namespace ArctisVoiceMeeter
 
         private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
+            services.AddSingleton<StartupManager>();
+
             services.AddSingleton<ArctisClient>();
             services.AddSingleton<HeadsetPoller>();
 
@@ -49,19 +56,34 @@ namespace ArctisVoiceMeeter
             services.AddSingleton<MainWindow>();
         }
 
-        protected override async void OnExit(ExitEventArgs e)
-        {
-            await _host.StopAsync();
-            base.OnExit(e);
-        }
-
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            EnsureSingleInstance();
+
             using var scope = _host.Services.CreateScope();
             
             var mainWindow = scope.ServiceProvider.GetRequiredService<MainWindow>();
             
             mainWindow.Show();
+
+            if (e.Args.FirstOrDefault() == "--minimized")
+                mainWindow.WindowState = WindowState.Minimized;
+        }
+
+        private async void App_OnExit(object sender, ExitEventArgs e)
+        {
+            await _host.StopAsync();
+            _singleInstanceMutex.Dispose();
+        }
+
+        private void EnsureSingleInstance()
+        {
+            _singleInstanceMutex = new Mutex(true, SingleInstanceMutexValue, out bool isNewInstance);
+            if (!isNewInstance)
+            {
+                MessageBox.Show("You can only run a single instance of this application");
+                Shutdown();
+            }
         }
     }
 }

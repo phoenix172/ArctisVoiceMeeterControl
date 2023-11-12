@@ -33,10 +33,5 @@ namespace ArctisVoiceMeeter.Views
         {
             Application.Current.Shutdown();
         }
-
-        private void ExecutedCustomCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            MessageBox.Show("kur");
-        }
     }
 }
