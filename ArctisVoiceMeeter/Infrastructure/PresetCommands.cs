@@ -4,7 +4,9 @@ namespace ArctisVoiceMeeter.Infrastructure;
 
 public static class PresetCommands
 {
-    public static RoutedCommand DeletePresetCommand = new();
-    public static RoutedCommand RenamePresetCommand = new();
-    public static RoutedCommand CreatePresetCommand = new();
+    public static RoutedCommand Delete = new();
+    public static RoutedCommand Rename = new();
+    public static RoutedCommand Commit = new();
+    public static RoutedCommand Discard = new();
+    public static RoutedCommand Create = new();
 }

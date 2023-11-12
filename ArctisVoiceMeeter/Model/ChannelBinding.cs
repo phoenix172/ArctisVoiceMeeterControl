@@ -22,11 +22,6 @@ public partial class ChannelBinding : ObservableObject, IDisposable
     [ObservableProperty] 
     private float _voiceMeeterVolume;
 
-    [ObservableProperty]
-    private string _bindingName;
-
-
-
     public ChannelBinding(HeadsetPoller poller, VoiceMeeterClient voiceMeeter, ChannelBindingOptions options)
     {
         HeadsetPoller = poller;
@@ -41,6 +36,9 @@ public partial class ChannelBinding : ObservableObject, IDisposable
 
     private void OnOptionsPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if(e.PropertyName == nameof(Options.BindingName))
+            OnPropertyChanged(nameof(BindingName));
+
         OptionsChanged?.Invoke(this, (ChannelBindingOptions)sender);
     }
 
@@ -54,6 +52,12 @@ public partial class ChannelBinding : ObservableObject, IDisposable
             SetProperty(ref _boundHeadsets, value);
             Options.BoundHeadsets = value.ToList();
         }
+    }
+
+    public string BindingName
+    {
+        get => Options.BindingName;
+        set => Options.BindingName = value;
     }
 
     private void OnHeadsetStatusChanged(object? sender, ArctisStatus[] status)

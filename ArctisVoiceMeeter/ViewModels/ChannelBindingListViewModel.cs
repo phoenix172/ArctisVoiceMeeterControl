@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 using ArctisVoiceMeeter.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -19,7 +20,7 @@ public partial class ChannelBindingListViewModel : ObservableObject
         ChannelBindings = CreateChannelBindingsCollectionView();
     }
 
-    public ICollectionView ChannelBindings { get; }
+    public ListCollectionView ChannelBindings { get; }
 
     [RelayCommand]
     public void CreateBinding()
@@ -31,20 +32,44 @@ public partial class ChannelBindingListViewModel : ObservableObject
     [RelayCommand]
     public void RemoveBinding(ChannelBindingViewModel binding)
     {
-        if(_bindingService.RemoveBinding(binding.BindingName))
+        if (_bindingService.RemoveBinding(binding.BindingName))
             _channelBindingsSource.Remove(binding);
     }
 
     [RelayCommand]
     public void RenameBinding(ChannelBindingViewModel binding)
     {
+        if (ChannelBindings.IsEditingItem)
+            ChannelBindings.CancelEdit();
 
+        ChannelBindings.EditItem(binding);
     }
 
-    private ICollectionView CreateChannelBindingsCollectionView()
+    [RelayCommand]
+    public void CommitBinding(ChannelBindingViewModel binding)
+    {
+        if (!ChannelBindings.IsEditingItem) return;
+
+        if (_channelBindingsSource.Any(x => x != binding && x.BindingName == binding.BindingName))
+        {
+            MessageBox.Show("A binding with the specified name already exists.");
+            return;
+        }
+
+        ChannelBindings.CommitEdit();
+    }
+
+    [RelayCommand]
+    public void DiscardBinding(ChannelBindingViewModel binding)
+    {
+        if (ChannelBindings.IsEditingItem)
+            ChannelBindings.CancelEdit();
+    }
+
+    private ListCollectionView CreateChannelBindingsCollectionView()
     {
         var viewModels = _bindingService.Bindings.Select(x => new ChannelBindingViewModel(x));
         _channelBindingsSource = new ObservableCollection<ChannelBindingViewModel>(viewModels);
-        return CollectionViewSource.GetDefaultView(_channelBindingsSource);
+        return (ListCollectionView)CollectionViewSource.GetDefaultView(_channelBindingsSource);
     }
 }

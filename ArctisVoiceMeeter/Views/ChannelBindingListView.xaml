@@ -6,16 +6,22 @@
              xmlns:infrastructure="clr-namespace:ArctisVoiceMeeter.Infrastructure"
              xmlns:mvvmCommand="clr-namespace:MvvmRoutedCommandBinding;assembly=MvvmRoutedCommandBinding"
              xmlns:wpf="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:viewModels="clr-namespace:ArctisVoiceMeeter.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <mvvmCommand:Mvvm.CommandBindings>
         <mvvmCommand:MvvmCommandBindingCollection>
-            <mvvmCommand:MvvmCommandBinding Command="infrastructure:PresetCommands.DeletePresetCommand" 
+            <mvvmCommand:MvvmCommandBinding Command="infrastructure:PresetCommands.Delete" 
                                             Target="{Binding RemoveBindingCommand}"/>
-            <mvvmCommand:MvvmCommandBinding Command="infrastructure:PresetCommands.CreatePresetCommand" 
+            <mvvmCommand:MvvmCommandBinding Command="infrastructure:PresetCommands.Create" 
                                             Target="{Binding CreateBindingCommand}"/>
-            <mvvmCommand:MvvmCommandBinding Command="infrastructure:PresetCommands.RenamePresetCommand" 
+            <mvvmCommand:MvvmCommandBinding Command="infrastructure:PresetCommands.Rename" 
                                             Target="{Binding RenameBindingCommand}"/>
+            <mvvmCommand:MvvmCommandBinding Command="infrastructure:PresetCommands.Commit" 
+                                            Target="{Binding CommitBindingCommand}"/>
+            <mvvmCommand:MvvmCommandBinding Command="infrastructure:PresetCommands.Discard" 
+                                            Target="{Binding DiscardBindingCommand}"/>
         </mvvmCommand:MvvmCommandBindingCollection>
     </mvvmCommand:Mvvm.CommandBindings>
     <GroupBox Header="VoiceMeeter Channel Binding" Padding="10" Margin="5">
@@ -24,43 +30,60 @@
                 <StackPanel Orientation="Horizontal">
 
                     <Button Content="{wpf:MaterialIconExt Kind=AddCircle}"
-                            Command="infrastructure:PresetCommands.CreatePresetCommand" 
+                            Command="infrastructure:PresetCommands.Create" 
                             Foreground="LimeGreen" 
                             Margin="0 0 5 0" BorderThickness="0" Background="Transparent"/>
                     <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
                 </StackPanel>
             </DataTemplate>
         </GroupBox.HeaderTemplate>
-        <Grid>
-
-            <!--<StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Left">
-            <Button Command="infrastructure:PresetCommands.CreatePresetCommand" 
-                    Content="Create New"
-                    DockPanel.Dock="Top" HorizontalAlignment="Left" MinWidth="100" Margin="0 0 10 5"/>
-        </StackPanel>-->
-
-            <TabControl ItemsSource="{Binding ChannelBindings}"
+        <TabControl ItemsSource="{Binding ChannelBindings}"
                     TabStripPlacement="Left" 
                     SelectedIndex="0"
                     IsSynchronizedWithCurrentItem="True">
-                <TabControl.Resources>
-                    <Style TargetType="TabItem" >
-                        <Setter Property="Header" Value="{Binding BindingName}"/>
-                        <Setter Property="ContextMenu">
-                            <Setter.Value>
-                                <ContextMenu>
-                                    <MenuItem Header="Delete"
-                                          Command="{x:Static infrastructure:PresetCommands.DeletePresetCommand}"
+            <TabControl.InputBindings>
+                <KeyBinding Key="F2" Command="infrastructure:PresetCommands.Rename" CommandParameter="{Binding ChannelBindings.CurrentItem}"/>
+                <KeyBinding Key="Esc" Command="infrastructure:PresetCommands.Discard" CommandParameter="{Binding ChannelBindings.CurrentItem}"/>
+            </TabControl.InputBindings>
+            <TabControl.Resources>
+                <Style TargetType="TabItem" >
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsRenaming}" Value="True">
+                            <Setter Property="HeaderTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="{x:Type viewModels:ChannelBindingViewModel}">
+                                        <TextBox Text="{Binding BindingName, UpdateSourceTrigger=PropertyChanged}">
+                                            <TextBox.InputBindings>
+                                                <KeyBinding Command="infrastructure:PresetCommands.Commit" CommandParameter="{Binding}" Key="Enter" />
+                                                <KeyBinding Command="infrastructure:PresetCommands.Discard" CommandParameter="{Binding}" Key="Escape" />
+                                            </TextBox.InputBindings>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="HeaderTemplate">
+                        <Setter.Value>
+                            <DataTemplate DataType="{x:Type viewModels:ChannelBindingViewModel}">
+                                <TextBlock Text="{Binding BindingName}"/>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+                                <MenuItem Header="Delete"
+                                          Command="{x:Static infrastructure:PresetCommands.Delete}"
                                           CommandParameter="{Binding}"/>
-                                    <MenuItem Header="Rename"
-                                          Command="{x:Static infrastructure:PresetCommands.RenamePresetCommand}"
+                                <MenuItem Header="Rename"
+                                          Command="{x:Static infrastructure:PresetCommands.Rename}"
                                           CommandParameter="{Binding}"/>
-                                </ContextMenu>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </TabControl.Resources>
-            </TabControl>
-        </Grid>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+        </TabControl>
     </GroupBox>
 </UserControl>

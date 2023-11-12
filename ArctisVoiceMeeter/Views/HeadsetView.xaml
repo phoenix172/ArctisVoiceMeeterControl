@@ -28,11 +28,14 @@
                 </StackPanel>
             </StackPanel>
 
-            <ItemsControl ItemsSource="{Binding ChannelBindings}">
+            <ItemsControl ItemsSource="{Binding ChannelBindings}" 
+                          Grid.IsSharedSizeScope="True">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModels:HeadsetChannelBindingViewModel}">
                         <StackPanel>
-                            <ToggleButton IsChecked="{Binding Path=ThreeState,Mode=TwoWay}" IsThreeState="True">
+                            <ToggleButton IsChecked="{Binding Path=ThreeState,Mode=TwoWay}"
+                                          IsThreeState="True"
+                                          HorizontalContentAlignment="Stretch">
                                 <ToggleButton.Style>
                                     <Style TargetType="ToggleButton">
                                         <Style.Triggers>
@@ -50,6 +53,23 @@
                                         <Setter Property="IsChecked" Value="{x:Null}"/>
                                     </Style>
                                 </ToggleButton.Style>
+                                <ToggleButton.ContentTemplate>
+                                    <DataTemplate>
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="PresetSizeColumn"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Background="LightBlue" CornerRadius="15" Padding="10 3" HorizontalAlignment="Stretch">
+                                            <TextBlock Text="{Binding 
+                                                RelativeSource={RelativeSource FindAncestor, AncestorType=ToggleButton},
+                                                Path=DataContext.BindingName}" HorizontalAlignment="Center" />
+                                            </Border>
+
+                                            <TextBlock Text="{Binding Mode=OneWay}" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ToggleButton.ContentTemplate>
                             </ToggleButton>
                         </StackPanel>
                     </DataTemplate>

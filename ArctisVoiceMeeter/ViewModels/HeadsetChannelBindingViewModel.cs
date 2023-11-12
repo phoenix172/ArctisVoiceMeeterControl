@@ -16,42 +16,57 @@ public partial class HeadsetChannelBindingViewModel : ObservableObject
         _headsetBinding.PropertyChanged += HeadsetBindingOnPropertyChanged;
     }
 
+    public string BindingName
+    {
+        get => _headsetBinding.ChannelBindingName;
+        set => _headsetBinding.ChannelBindingName = value;
+    }
+
     public bool? ThreeState
     {
-        get
+        get => GetThreeState();
+        set => SetThreeState(value);
+    }
+
+    private void SetThreeState(bool? value)
+    {
+        if (value == false)
         {
-            (bool IsEnabled, ArctisChannel BoundChannel) switchKey = (_headsetBinding.IsEnabled, _headsetBinding.BoundChannel);
-            bool? resultState = switchKey switch
-            {
-                (IsEnabled: true, BoundChannel: ArctisChannel.Game) => false,
-                (IsEnabled: true, BoundChannel: ArctisChannel.Chat) => true,
-                _ => null
-            };
-            return resultState;
+            _headsetBinding.BoundChannel = ArctisChannel.Game;
+            _headsetBinding.IsEnabled = true;
         }
-        set
+        else if (value == true)
         {
-            if (value == false)
-            {
-                _headsetBinding.BoundChannel = ArctisChannel.Game;
-                _headsetBinding.IsEnabled = true;
-            }
-            else if (value == true)
-            {
-                _headsetBinding.BoundChannel = ArctisChannel.Chat;
-                _headsetBinding.IsEnabled = true;
-            }
-            else
-            {
-                _headsetBinding.IsEnabled = false;
-            }
-            
-            SetProperty(ref _threeState, value);
+            _headsetBinding.BoundChannel = ArctisChannel.Chat;
+            _headsetBinding.IsEnabled = true;
         }
+        else
+        {
+            _headsetBinding.IsEnabled = false;
+        }
+
+        SetProperty(ref _threeState, value);
+    }
+
+    private bool? GetThreeState()
+    {
+        (bool IsEnabled, ArctisChannel BoundChannel) switchKey = (_headsetBinding.IsEnabled, _headsetBinding.BoundChannel);
+        bool? resultState = switchKey switch
+        {
+            (IsEnabled: true, BoundChannel: ArctisChannel.Game) => false,
+            (IsEnabled: true, BoundChannel: ArctisChannel.Chat) => true,
+            _ => null
+        };
+        return resultState;
     }
 
     private void HeadsetBindingOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(_headsetBinding.ChannelBindingName))
+        {
+            OnPropertyChanged(nameof(BindingName));
+        }
+
         OnPropertyChanged(nameof(ThreeState));
     }
 }
