@@ -2,6 +2,6 @@
 
 public enum ArctisChannel
 {
-    Chat,
-    Game
+    Game,
+    Chat
 }

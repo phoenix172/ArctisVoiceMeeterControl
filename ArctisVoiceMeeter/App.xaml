@@ -4,18 +4,27 @@
              xmlns:local="clr-namespace:ArctisVoiceMeeter"
              xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
              xmlns:viewModels="clr-namespace:ArctisVoiceMeeter.ViewModels"
+             xmlns:views="clr-namespace:ArctisVoiceMeeter.Views"
              Startup="Application_Startup"
              >
     <!--StartupUri="/Views/MainWindow.xaml"-->
     <Application.Resources>
          <ResourceDictionary>
-             <DataTemplate DataType="{x:Type viewModels:HeadsetViewModel}">
-                 <local:HeadsetView />
+             <DataTemplate DataType="{x:Type viewModels:HeadsetStatusListViewModel}">
+                 <views:HeadsetListView />
              </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModels:ChannelBindingViewModel}">
-                 <local:ChannelBindingView />
+                <views:ChannelBindingView />
+            </DataTemplate>
+
+             <DataTemplate DataType="{x:Type viewModels:HeadsetViewModel}">
+                <views:HeadsetView/>
+            </DataTemplate>
+
+             <DataTemplate DataType="{x:Type viewModels:ChannelBindingListViewModel}">
+                 <views:ChannelBindingListView/>
              </DataTemplate>
-         </ResourceDictionary>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

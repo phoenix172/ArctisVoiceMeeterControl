@@ -1,6 +1,6 @@
-﻿using AtgDev.Voicemeeter.Utils;
+﻿using System;
 using AtgDev.Voicemeeter;
-using System;
+using AtgDev.Voicemeeter.Utils;
 
 namespace ArctisVoiceMeeter.Model;
 

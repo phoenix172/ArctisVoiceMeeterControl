@@ -1,32 +1,80 @@
-﻿<UserControl x:Class="ArctisVoiceMeeter.HeadsetView"
+﻿<UserControl x:Class="ArctisVoiceMeeter.Views.HeadsetView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:ArctisVoiceMeeter"
-             xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ArctisVoiceMeeter.Views"
              xmlns:viewModels="clr-namespace:ArctisVoiceMeeter.ViewModels"
-             mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance viewModels:HeadsetViewModel}"
-             d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <StackPanel DataContext="{Binding Status}">
-            <StackPanel Orientation="Horizontal" Margin="3">
-                <Label>Chat Volume:</Label>
-                <Label Content="{Binding ChatVolume}" />
+             xmlns:model="clr-namespace:ArctisVoiceMeeter.Model"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:arctisVoiceMeeter="clr-namespace:ArctisVoiceMeeter"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance viewModels:HeadsetViewModel}">
+    <GroupBox Header="{Binding HeadsetName}" BorderThickness="2" BorderBrush="Black">
+        <StackPanel>
+            <StackPanel  DataContext="{Binding Status}" >
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Label>Chat Volume:</Label>
+                    <Label Content="{Binding ChatVolume}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Label>Game Volume:</Label>
+                    <Label Content="{Binding GameVolume}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Label>Battery:</Label>
+                    <Label Content="{Binding Battery}" />
+                </StackPanel>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="3">
-                <Label>Game Volume:</Label>
-                <Label Content="{Binding GameVolume}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="3">
-                <Label>Battery:</Label>
-                <Label Content="{Binding Battery}" />
-            </StackPanel>
+
+            <ItemsControl ItemsSource="{Binding ChannelBindings}" 
+                          Grid.IsSharedSizeScope="True">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:HeadsetChannelBindingViewModel}">
+                        <StackPanel>
+                            <ToggleButton IsChecked="{Binding Path=ThreeState,Mode=TwoWay}"
+                                          IsThreeState="True"
+                                          HorizontalContentAlignment="Stretch">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsChecked" Value="{x:Null}">
+                                                <Setter Property="Content" Value="Disabled"/>
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter Property="Content" Value="Chat"/>
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="False">
+                                                <Setter Property="Content" Value="Game"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Content" Value="Disabled"/>
+                                        <Setter Property="IsChecked" Value="{x:Null}"/>
+                                    </Style>
+                                </ToggleButton.Style>
+                                <ToggleButton.ContentTemplate>
+                                    <DataTemplate>
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="PresetSizeColumn"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Background="LightBlue" CornerRadius="15" Padding="10 3" HorizontalAlignment="Stretch">
+                                            <TextBlock Text="{Binding 
+                                                RelativeSource={RelativeSource FindAncestor, AncestorType=ToggleButton},
+                                                Path=DataContext.BindingName}" HorizontalAlignment="Center" />
+                                            </Border>
+
+                                            <TextBlock Text="{Binding Mode=OneWay}" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ToggleButton.ContentTemplate>
+                            </ToggleButton>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Margin="3">
-            <Label>Refresh Rate:</Label>
-            <Label Content="{Binding Poller.ArctisRefreshRate }" />
-        </StackPanel>
-    </StackPanel>
+    </GroupBox>
 </UserControl>

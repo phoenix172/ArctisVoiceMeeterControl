@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace ArctisVoiceMeeter.Views
 {
     /// <summary>
-    /// Interaction logic for HeadsetView.xaml
+    /// Interaction logic for ChannelBindingListView.xaml
     /// </summary>
-    public partial class HeadsetView : UserControl
+    public partial class ChannelBindingListView : UserControl
     {
-        public HeadsetView()
+        public ChannelBindingListView()
         {
             InitializeComponent();
         }

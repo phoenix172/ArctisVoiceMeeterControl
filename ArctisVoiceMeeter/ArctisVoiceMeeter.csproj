@@ -19,9 +19,15 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
 		<PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
 		<PackageReference Include="HidSharp" Version="2.1.0" />
+		<PackageReference Include="Material.Icons.WPF" Version="2.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\MvvmRoutedCommandBinding\MvvmRoutedCommandBinding.csproj" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <Resource Include="Infrastructure\Icon.ico" />
