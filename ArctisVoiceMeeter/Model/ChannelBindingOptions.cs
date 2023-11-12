@@ -25,6 +25,7 @@ public partial class ChannelBindingOptions : ObservableObject
     public ChannelBindingOptions(string bindingName)
     {
         _bindingName = bindingName;
+        _boundHeadsets = new();
     }
 
     public List<HeadsetChannelBinding> BoundHeadsets

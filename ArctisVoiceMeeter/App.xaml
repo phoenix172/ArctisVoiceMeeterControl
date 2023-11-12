@@ -15,8 +15,8 @@
              </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModels:ChannelBindingViewModel}">
-                 <local:ChannelBindingView />
-             </DataTemplate>
+                <local:ChannelBindingView />
+            </DataTemplate>
 
              <DataTemplate DataType="{x:Type viewModels:HeadsetViewModel}">
                 <views:HeadsetView/>
