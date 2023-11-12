@@ -11,11 +11,11 @@
     <Application.Resources>
          <ResourceDictionary>
              <DataTemplate DataType="{x:Type viewModels:HeadsetStatusListViewModel}">
-                 <local:HeadsetListView />
+                 <views:HeadsetListView />
              </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModels:ChannelBindingViewModel}">
-                <local:ChannelBindingView />
+                <views:ChannelBindingView />
             </DataTemplate>
 
              <DataTemplate DataType="{x:Type viewModels:HeadsetViewModel}">

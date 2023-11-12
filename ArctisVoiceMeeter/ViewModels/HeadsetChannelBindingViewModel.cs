@@ -1,9 +1,8 @@
 using System.ComponentModel;
-using System.Windows;
 using ArctisVoiceMeeter.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ArctisVoiceMeeter;
+namespace ArctisVoiceMeeter.ViewModels;
 
 public partial class HeadsetChannelBindingViewModel : ObservableObject
 {

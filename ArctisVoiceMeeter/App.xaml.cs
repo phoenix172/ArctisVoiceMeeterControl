@@ -8,6 +8,7 @@ using System.Windows;
 using ArctisVoiceMeeter.Infrastructure;
 using ArctisVoiceMeeter.Model;
 using ArctisVoiceMeeter.ViewModels;
+using ArctisVoiceMeeter.Views;
 using Awesome.Net.WritableOptions;
 using Awesome.Net.WritableOptions.Extensions;
 using Microsoft.Extensions.Configuration;

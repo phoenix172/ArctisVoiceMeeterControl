@@ -1,6 +1,5 @@
-﻿using AtgDev.Voicemeeter.Utils;
-using AtgDev.Voicemeeter;
-using System;
+﻿using System;
+using ArctisVoiceMeeter.RemoteApiWrapper_partial;
 
 namespace ArctisVoiceMeeter.Model;
 

@@ -30,7 +30,7 @@
 
             <ItemsControl ItemsSource="{Binding ChannelBindings}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type arctisVoiceMeeter:HeadsetChannelBindingViewModel}">
+                    <DataTemplate DataType="{x:Type viewModels:HeadsetChannelBindingViewModel}">
                         <StackPanel>
                             <ToggleButton IsChecked="{Binding Path=ThreeState,Mode=TwoWay}" IsThreeState="True">
                                 <ToggleButton.Style>

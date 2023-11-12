@@ -1,24 +1,12 @@
-﻿using ArctisVoiceMeeter.Model;
-using ArctisVoiceMeeter.ViewModels;
-using Awesome.Net.WritableOptions;
-using CommunityToolkit.Mvvm.Collections;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Authentication.ExtendedProtection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Data;
-using System.Xml.Linq;
-using ChannelBinding = ArctisVoiceMeeter.Model.ChannelBinding;
+using Awesome.Net.WritableOptions;
 
-namespace ArctisVoiceMeeter
+namespace ArctisVoiceMeeter.Model
 {
     public class ChannelBindingService : IDisposable
     {
