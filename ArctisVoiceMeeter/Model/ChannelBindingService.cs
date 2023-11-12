@@ -73,6 +73,15 @@ namespace ArctisVoiceMeeter.Model
             return binding;
         }
 
+        public void RenameBinding(string oldName, string newName)
+        {
+            _presets.Update(presets =>
+            {
+                var binding = presets.FirstOrDefault(x => x.BindingName == oldName);
+                binding.BindingName = newName;
+            });
+        }
+
         public void ChangeBinding(ChannelBindingOptions binding)
         {
             _presets.Update(presets =>
@@ -165,6 +174,7 @@ namespace ArctisVoiceMeeter.Model
             foreach (var binding in Bindings)
             {
                 binding.OptionsChanged -= BindingPropertyChanged;
+                binding.BindingNameChanged -= BindingNameChanged;
                 binding.Dispose();
             }
 
@@ -175,6 +185,7 @@ namespace ArctisVoiceMeeter.Model
         {
             var binding = new ChannelBinding(_headsetPoller, _voiceMeeterClient, options);
             binding.OptionsChanged += BindingPropertyChanged;
+            binding.BindingNameChanged += BindingNameChanged;
             return binding;
         }
 
@@ -185,9 +196,16 @@ namespace ArctisVoiceMeeter.Model
 
             return new ObservableCollection<ChannelBinding>(bindings);
         }
-        private void BindingPropertyChanged(object? sender, ChannelBindingOptions options)
+
+        private void BindingPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            var options = sender as ChannelBindingOptions ?? throw new ArgumentException("ChannelBindingOptions type expected", nameof(sender));
             ChangeBinding(options);
+        }
+
+        private void BindingNameChanged(object? sender, PropertyValueChangedEventArgs e)
+        {
+            RenameBinding(e.OldValue.ToString(), e.NewValue.ToString());
         }
     }
 }

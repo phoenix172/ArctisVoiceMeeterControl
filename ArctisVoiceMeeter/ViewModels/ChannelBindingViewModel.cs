@@ -29,7 +29,7 @@ public partial class ChannelBindingViewModel : ObservableObject, IEditableObject
 
     public void EndEdit()
     {
-        ChannelBinding.BindingName = BindingName;
+        ChannelBinding.Rename(BindingName);
         IsRenaming = false;
     }
 }

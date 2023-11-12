@@ -8,9 +8,22 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ArctisVoiceMeeter.Model;
 
+public class PropertyValueChangedEventArgs : PropertyChangedEventArgs
+{
+    public object OldValue { get; set; }
+    public object NewValue { get; set; }
+
+    public PropertyValueChangedEventArgs(string? propertyName, object? oldValue, object? newValue) : base(propertyName)
+    {
+        OldValue = oldValue;
+        NewValue = newValue;
+    }
+}
+
 public partial class ChannelBinding : ObservableObject, IDisposable
 {
-    public event EventHandler<ChannelBindingOptions> OptionsChanged;
+    public event PropertyChangedEventHandler OptionsChanged;
+    public event EventHandler<PropertyValueChangedEventArgs> BindingNameChanged;
 
     private readonly VoiceMeeterClient _voiceMeeter;
 
@@ -27,7 +40,6 @@ public partial class ChannelBinding : ObservableObject, IDisposable
         HeadsetPoller = poller;
         _voiceMeeter = voiceMeeter;
         Options = options;
-        BindingName = Options.BindingName;
         BoundHeadsets = Options.BoundHeadsets.ToArray();
 
         HeadsetPoller.ArctisStatusChanged += OnHeadsetStatusChanged;
@@ -36,13 +48,18 @@ public partial class ChannelBinding : ObservableObject, IDisposable
 
     private void OnOptionsPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if(e.PropertyName == nameof(Options.BindingName))
-            OnPropertyChanged(nameof(BindingName));
-
-        OptionsChanged?.Invoke(this, (ChannelBindingOptions)sender);
+        if(e.PropertyName != nameof(Options.BindingName))
+            OptionsChanged?.Invoke(sender, e);
     }
 
     public HeadsetPoller HeadsetPoller { get; }
+
+    public void Rename(string newName)
+    {
+        string oldName = Options.BindingName;
+        Options.BindingName = newName;
+        BindingNameChanged?.Invoke(this, new PropertyValueChangedEventArgs(nameof(BindingName), oldName, newName));
+    }
 
     public HeadsetChannelBinding[] BoundHeadsets
     {
@@ -54,11 +71,7 @@ public partial class ChannelBinding : ObservableObject, IDisposable
         }
     }
 
-    public string BindingName
-    {
-        get => Options.BindingName;
-        set => Options.BindingName = value;
-    }
+    public string BindingName => Options.BindingName;
 
     private void OnHeadsetStatusChanged(object? sender, ArctisStatus[] status)
     {
