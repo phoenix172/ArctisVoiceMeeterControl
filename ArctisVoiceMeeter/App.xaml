@@ -21,6 +21,10 @@
              <DataTemplate DataType="{x:Type viewModels:HeadsetViewModel}">
                 <views:HeadsetView/>
             </DataTemplate>
-         </ResourceDictionary>
+
+             <DataTemplate DataType="{x:Type viewModels:ChannelBindingListViewModel}">
+                 <views:ChannelBindingListView/>
+             </DataTemplate>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

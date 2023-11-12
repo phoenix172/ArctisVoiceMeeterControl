@@ -38,28 +38,13 @@
                                         <Style.Triggers>
                                             <Trigger Property="IsChecked" Value="{x:Null}">
                                                 <Setter Property="Content" Value="Disabled"/>
-                                                <!--<Setter Property="IsChecked" Value="{x:Null}"/>-->
                                             </Trigger>
                                             <Trigger Property="IsChecked" Value="True">
                                                 <Setter Property="Content" Value="Chat"/>
-                                                <!--<Setter Property="IsChecked" Value="{x:Null}"/>-->
                                             </Trigger>
                                             <Trigger Property="IsChecked" Value="False">
                                                 <Setter Property="Content" Value="Game"/>
-                                                <!--<Setter Property="IsChecked" Value="{x:Null}"/>-->
                                             </Trigger>
-                                            <!--<DataTrigger Binding="{Binding IsEnabled}" Value="false">
-                                                <Setter Property="Content" Value="Disabled"/>
-                                                <Setter Property="IsChecked" Value="{x:Null}"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding BoundChannel}" Value="{x:Static model:ArctisChannel.Game}">
-                                                <Setter Property="Content" Value="Game"/>
-                                                <Setter Property="IsChecked" Value="True"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding BoundChannel}" Value="{x:Static model:ArctisChannel.Chat}">
-                                                <Setter Property="Content" Value="Chat"/>
-                                                <Setter Property="IsChecked" Value="False"/>
-                                            </DataTrigger>-->
                                         </Style.Triggers>
                                         <Setter Property="Content" Value="Disabled"/>
                                         <Setter Property="IsChecked" Value="{x:Null}"/>

@@ -49,6 +49,7 @@ namespace ArctisVoiceMeeter
             services.ConfigureWritableOptions<ArctisVoiceMeeterPresets>((IConfigurationRoot)context.Configuration, "Presets");
 
             services.AddTransient<HeadsetStatusListViewModel>();
+            services.AddTransient<ChannelBindingListViewModel>();
             services.AddSingleton<ChannelBindingService>();
 
             services.AddSingleton<MainViewModel>();

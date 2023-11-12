@@ -17,21 +17,18 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace ArctisVoiceMeeter.ViewModels;
 
-public partial class MainViewModel : ObservableObject
+public partial class ChannelBindingListViewModel : ObservableObject
 {
     private readonly ChannelBindingService _bindingService;
     private ObservableCollection<ChannelBindingViewModel> _channelBindingsSource;
 
-
-    public MainViewModel(HeadsetStatusListViewModel headsetStatusListViewModel, ChannelBindingService bindingService)
+    public ChannelBindingListViewModel(ChannelBindingService bindingService)
     {
         _bindingService = bindingService;
-        HeadsetStatusListViewModel = headsetStatusListViewModel;
         ChannelBindings = CreateChannelBindingsCollectionView();
     }
 
     public ICollectionView ChannelBindings { get; }
-    public HeadsetStatusListViewModel HeadsetStatusListViewModel { get; }
 
     [RelayCommand]
     public void CreateBinding()
@@ -47,10 +44,30 @@ public partial class MainViewModel : ObservableObject
             _channelBindingsSource.Remove(binding);
     }
 
+    [RelayCommand]
+    public void RenameBinding(ChannelBindingViewModel binding)
+    {
+
+    }
+
     private ICollectionView CreateChannelBindingsCollectionView()
     {
         var viewModels = _bindingService.Bindings.Select(x => new ChannelBindingViewModel(x));
         _channelBindingsSource = new ObservableCollection<ChannelBindingViewModel>(viewModels);
         return CollectionViewSource.GetDefaultView(_channelBindingsSource);
     }
+}
+
+public partial class MainViewModel : ObservableObject
+{
+    public MainViewModel(
+        HeadsetStatusListViewModel headsetStatus, 
+        ChannelBindingListViewModel channelBindingListViewModel)
+    {
+        ChannelBindings = channelBindingListViewModel;
+        HeadsetStatus = headsetStatus;
+    }
+
+    public ChannelBindingListViewModel ChannelBindings { get; set; }
+    public HeadsetStatusListViewModel HeadsetStatus { get; }
 }
