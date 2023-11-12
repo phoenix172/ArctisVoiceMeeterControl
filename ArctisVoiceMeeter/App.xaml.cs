@@ -59,7 +59,7 @@ namespace ArctisVoiceMeeter
         {
             using var scope = _host.Services.CreateScope();
             
-            var mainWindow = scope.ServiceProvider.GetService<MainWindow>();
+            var mainWindow = scope.ServiceProvider.GetRequiredService<MainWindow>();
             
             mainWindow.Show();
         }
