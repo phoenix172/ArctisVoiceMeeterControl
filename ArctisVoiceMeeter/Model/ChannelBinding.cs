@@ -84,7 +84,10 @@ public partial class ChannelBinding : ObservableObject, IDisposable
 
     private void UpdateVoiceMeeterGain(ArctisStatus arctisStatus, ArctisChannel channel)
     {
-        VoiceMeeterVolume = GetScaledChannelVolume(arctisStatus, channel);
+        float newVolume = GetScaledChannelVolume(arctisStatus, channel);
+        if(newVolume == VoiceMeeterVolume) return;
+        VoiceMeeterVolume = newVolume;
+
         _voiceMeeter.TrySetGain(Options.BoundStrip, VoiceMeeterVolume);
     }
 
