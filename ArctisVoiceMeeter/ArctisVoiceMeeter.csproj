@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-	<Version>2.0.0</Version>
+	<Version>2.0.1</Version>
 	<Copyright>Phoenix172</Copyright>
   </PropertyGroup>
 
